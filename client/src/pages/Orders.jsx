@@ -4,7 +4,7 @@ const Orders = () => {
   return (
     <div>
       {/* Orders page content here */}
-        <h1>
+        <h1 className='text-white'>
             Orders
         </h1>
     </div>

@@ -4,7 +4,7 @@ const Profile = () => {
   return (
     <div>
       {/* Profile page content here */}
-        <h1>
+        <h1 className='text-white'>
             Profile
         </h1>
     </div>

@@ -1,16 +1,18 @@
 import React from 'react';
-import Hero from '../components/Hero';
+import Hero from '../components/hero/Hero';
+import ArtGenerator from '../components/hero/ArtGenerator';
 import Pitch from '../components/Pitch';
-import MarketplaceHighlights from '../components/MarketplaceHighlights';
-import Footer from '../components/Footer';
+import MarketplaceHighlights from '../components/marketplace/MarketplaceHighlights';
 
 const Home = () => {
   return (
     <>
-      <Hero />
+      <div className='flex flex-row'>
+        <Hero />
+        <ArtGenerator />
+      </div>
       <Pitch />
       <MarketplaceHighlights />
-      <Footer />
     </>
   );
 };

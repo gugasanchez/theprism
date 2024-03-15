@@ -1,12 +1,10 @@
 import React from 'react';
+import NFTGrid from '../components/marketplace/NFTGrid';
 
 const Marketplace = () => {
   return (
     <div>
-      {/* Marketplace page content here */}
-        <h1>
-            Marketplace
-        </h1>
+        <NFTGrid />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import MarketplaceHighlights from '../components/marketplace/MarketplaceHighligh
 const Home = () => {
   return (
     <>
-      <div className="w-full h-[500px] flex md:justify-center justify-between items-center flex-row gradient-bg-welcome">
+      <div className="flex flex-grow flex-row space-between items-start justify-center gap-20 p-4 pt-[10rem] gradient-bg-welcome">
         <Hero />
         <ArtGenerator />
       </div>

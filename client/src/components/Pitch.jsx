@@ -19,7 +19,7 @@ const ServiceCard = ({ color, title, icon, subtitle }) => (
 
 const Pitch = () => (
   <div className="flex w-full justify-center items-center gradient-bg-pitch">
-    <div className="flex flex-col items-center justify-between md:p-20 py-12 px-4">
+    <div className="flex w-[90%] flex-col items-center justify-between md:p-20 py-12 px-4">
       <div className="flex flex-1 flex-col justify-start items-center mx-auto">
         <h1 className="text-white text-3xl sm:text-5xl py-2 text-center text-gradient ">
           Services that we
@@ -32,7 +32,7 @@ const Pitch = () => (
         </p>
       </div>
 
-      <div className="flex-1 flex flex-row justify-center mt-10">
+      <div className="flex-1 flex flex-row justify-center mt-5">
         <ServiceCard
           color="bg-[#2952E3]"
           title="Security gurantee"

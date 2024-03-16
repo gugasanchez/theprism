@@ -41,7 +41,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full flex md:justify-center justify-between items-center p-4 navbar-fixed">
+    <nav className="flex w-full md:justify-center justify-between items-center p-4 navbar-fixed">
       <div className="md:flex-[0.5] flex-initial justify-center items-center">
         {location.pathname === '/' ? (
           <a onClick={logoClickHandler} className="cursor-pointer">

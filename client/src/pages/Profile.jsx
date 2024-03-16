@@ -1,12 +1,12 @@
 import React from 'react';
+import ProfileInfoForm from "../components/profile/ProfileInfoForm";
+import Designs from "../components/profile/Designs";
 
 const Profile = () => {
   return (
-    <div>
-      {/* Profile page content here */}
-        <h1 className='text-white'>
-            Profile
-        </h1>
+    <div className="flex flex-col pt-8">
+      <ProfileInfoForm />
+      <Designs />
     </div>
   );
 };

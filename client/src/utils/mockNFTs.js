@@ -46,5 +46,21 @@ export const mockNFTs = [
       likes: 350,
       price: '2.0',
       isListed: true,
-    }
+    },
+    {
+      id: '7',
+      image: 'https://img.freepik.com/fotos-premium/uma-camisa-branca-com-fundo-preto-e-as-costas_653449-538.jpg',
+      name: 'NFT #7',
+      likes: 400,
+      price: '1.5',
+      isListed: false,
+    },
+    {
+      id: '8',
+      image: 'https://img.freepik.com/fotos-premium/uma-camisa-branca-com-fundo-preto-e-as-costas_653449-538.jpg',
+      name: 'NFT #8',
+      likes: 450,
+      price: '1.5',
+      isListed: false,
+    },
 ];

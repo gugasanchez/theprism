@@ -12,10 +12,10 @@ const MarketplaceHighlights = () => {
     <div className="flex py-[6rem] gradient-bg-marketplacehl">
       <div className="flex flex-grow flex-col items-start justify-start sm:px-36 px-6">
         <h1 className="text-white text-3xl sm:text-5xl text-gradient">
-          Latest NFT Collections
+          Latest Collections
         </h1>
-        {/* Flex container for the grid and button */}
-        <div className="flex items-center justify-center w-full my-8">
+        {/* Flex container for the grid and button, adjusted to justify-between to push content to the sides */}
+        <div className="flex items-center justify-between w-full my-8">
           <div className="grid grid-cols-5 gap-4 justify-center items-center">
             {latestNFTs.map((nft) => (
               <NFTCard
@@ -26,9 +26,9 @@ const MarketplaceHighlights = () => {
               />
             ))}
           </div>
-          <div className="flex flex-col items-center justify-center gap-2 ml-4">
+          <div className="flex flex-col items-center justify-center gap-2 ml-10"> {/* Increased margin-left */}
             <button 
-              className="flex items-center justify-center bg-blue-500 text-white py-2 px-2 rounded-full cursor-pointer hover:bg-blue-700 transition duration-300 ease-in-out" 
+              className="flex items-center justify-center bg-blue-500 text-white py-2 px-4 rounded-full cursor-pointer hover:bg-blue-700 transition duration-300 ease-in-out" 
               onClick={() => navigate('/marketplace')}
             >
               <FiArrowRight className="" />
@@ -44,9 +44,3 @@ const MarketplaceHighlights = () => {
 };
 
 export default MarketplaceHighlights;
-
-
-/*
-      <div className="flex space-between pt-[15rem] gradient-bg-welcome">
-        <div className="flex flex-grow flex-row space-between items-start justify-around px-10">
-*/

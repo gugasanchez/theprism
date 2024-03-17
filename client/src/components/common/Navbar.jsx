@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { AiOutlineClose } from "react-icons/ai";
 import logo from "../../../images/logo.png";
+import '@particle-network/connect-react-ui/dist/index.css';
+import { ConnectButton } from '@particle-network/connect-react-ui';
 
 const NavBarItem = ({ title, path, classprops }) => (
   path ? (
@@ -70,9 +72,10 @@ const Navbar = () => {
           )}
         </div>
         {/* Login button */}
-        <li className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]">
+        {/*<li className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]">
           Login
-        </li>
+          </li>*/}
+        <ConnectButton />
       </ul>
       <div className="flex relative">
         {!toggleMenu && (

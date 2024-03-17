@@ -27,7 +27,7 @@ const ProfileInfoForm = () => {
   return (
     <div className="flex flex-col flex-1 items-center">
       <div className="flex flex-col items-start sm:w-[70%] w-full sm:px-0 px-4">
-        <h1 className="text-3xl font-bold text-white pt-20 pb-4">Profile</h1>
+        <h1 className="text-3xl sm:text-4xl text-white text-gradient pt-20 pb-4">Profile</h1>
         <div className="flex flex-row justify-between items-center w-full">
           <div className="flex flex-grow flex-col justify-start items-start p-5 gap-4 blue-glassmorphism">
             <form onSubmit={handleSubmit} className="flex flex-col w-full">

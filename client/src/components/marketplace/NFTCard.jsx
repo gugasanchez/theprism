@@ -23,8 +23,6 @@ const style = {
   sizeSelect: `inline-block bg-gray-700 text-white py-1 px-3 rounded text-center cursor-pointer`,
   orderButton: `bg-blue-500 text-white py-2 px-4 rounded w-full text-lg font-medium cursor-pointer`,
   modal: `fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-10`,
-  // modalContent: `bg-black p-9 rounded-lg max-w-lg w-full text-white`, // Adjusted padding here
-  // closeModalButton: `bg-gray-500 text-white py-1 px-3 rounded-full float-right`,
   modalContent: `bg-black p-6 rounded-lg max-w-lg w-full text-white relative`, // Add 'relative' here
   closeModalButton: `bg-gray-500 text-white py-1 px-3 rounded-full absolute top-4 right-2 mt-2 mr-2`, // Position absolutely
   addressInput: `bg-gray-700 p-2 rounded text-white w-full mb-2`, // Added margin-bottom for spacing
@@ -62,7 +60,7 @@ const NFTCard = ({ nftItem, title, listings }) => {
 
   const handleEstimatePrice = () => {
     // Placeholder logic for price estimation
-    const estimated = "20 USDT";
+    const estimated = "49.99 USDT";
     setEstimatedPrice(estimated);
     setShowConfirmOrder(true);
   };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BiHeart } from 'react-icons/bi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const style = {
   wrapper: `bg-[#303339] flex-auto w-[14rem] h-[22rem] my-5 mx-5 rounded-2xl overflow-hidden relative group`,
@@ -23,26 +23,59 @@ const style = {
   sizeSelect: `inline-block bg-gray-700 text-white py-1 px-3 rounded text-center cursor-pointer`,
   orderButton: `bg-blue-500 text-white py-2 px-4 rounded w-full text-lg font-medium cursor-pointer`,
   modal: `fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-10`,
-  modalContent: `bg-black p-6 rounded-lg max-w-lg w-full text-white`, // Ensure this line correctly sets the background to black
-  closeModalButton: `bg-gray-500 text-white py-1 px-3 rounded-full float-right`,
-  addressInput: `bg-gray-700 p-2 rounded text-white w-full`, // Style for the address input field
-  confirmOrderButton: `bg-blue-500 text-white py-2 px-4 rounded w-full cursor-pointer`, // Style for the "Confirm Order" button
+  // modalContent: `bg-black p-9 rounded-lg max-w-lg w-full text-white`, // Adjusted padding here
+  // closeModalButton: `bg-gray-500 text-white py-1 px-3 rounded-full float-right`,
+  modalContent: `bg-black p-6 rounded-lg max-w-lg w-full text-white relative`, // Add 'relative' here
+  closeModalButton: `bg-gray-500 text-white py-1 px-3 rounded-full absolute top-4 right-2 mt-2 mr-2`, // Position absolutely
+  addressInput: `bg-gray-700 p-2 rounded text-white w-full mb-2`, // Added margin-bottom for spacing
+  addressHeader: `mt-1 mb-4 text-lg`, // New style for the header text
+  confirmOrderButton: `bg-blue-500 text-white py-2 px-4 rounded w-full cursor-pointer`,
 };
 
 const NFTCard = ({ nftItem, title, listings }) => {
   const [isListed, setIsListed] = useState(false);
   const [price, setPrice] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showConfirmOrder, setShowConfirmOrder] = useState(false);
+  const [estimatedPrice, setEstimatedPrice] = useState('');
+  const [address, setAddress] = useState({
+    fullName: '',
+    streetAddress1: '',
+    streetAddress2: '',
+    city: '',
+    stateProvinceRegion: '',
+    postalCode: '',
+    country: '',
+  });
+
+  const navigate = useNavigate(); // Create an instance of useNavigate
 
   useEffect(() => {
-    const listing = listings.find((listing) => listing.asset.id === nftItem.id);
+    const listing = listings.find(listing => listing.asset.id === nftItem.id);
     if (listing) {
       setIsListed(true);
       setPrice(listing.buyoutCurrencyValuePerToken.displayValue);
     }
-  }, [listings, nftItem]);
+  }, [listings, nftItem.id]);
 
   const toggleModal = () => setShowModal(!showModal);
+
+  const handleEstimatePrice = () => {
+    // Placeholder logic for price estimation
+    const estimated = "20 USDT";
+    setEstimatedPrice(estimated);
+    setShowConfirmOrder(true);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAddress(prevState => ({ ...prevState, [name]: value }));
+  };
+
+  const handleConfirmOrder = () => {
+    toggleModal(); // Close the modal
+    navigate('/orders'); // Redirect to the orders page
+  };
 
   return (
     <div className={style.wrapper}>
@@ -59,7 +92,7 @@ const NFTCard = ({ nftItem, title, listings }) => {
             <div className={style.infoRight}>
               <div className={style.priceTag}>Price</div>
               <div className={style.priceValue}>
-                <img src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg" alt="eth" className={style.ethLogo} />
+                <img src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg" alt="ETH Logo" className={style.ethLogo} />
                 {price}
               </div>
             </div>
@@ -86,22 +119,34 @@ const NFTCard = ({ nftItem, title, listings }) => {
       </div>
       {showModal && (
         <div className={style.modal} onClick={toggleModal}>
-        <div className={style.modalContent} onClick={(e) => e.stopPropagation()}>
-          <button className={style.closeModalButton} onClick={toggleModal}>X</button>
-          <h3>Fill in Your Shipping Address</h3>
-          <textarea className={style.addressInput} placeholder="Your Address"></textarea>
-          <button className={style.confirmOrderButton} onClick={() => {
-            // Implement the order confirmation logic here
-            alert('Order confirmed!'); // Placeholder action
-            toggleModal(); // Close modal after confirmation
-          }}>
-            Confirm Order
-          </button>
+          <div className={style.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={style.closeModalButton} onClick={toggleModal}>X</button>
+            <div className={style.addressHeader}>Fill in Your Shipping Address</div>
+            <input className={style.addressInput} placeholder="Full Name" name="fullName" value={address.fullName} onChange={handleChange} />
+            <input className={style.addressInput} placeholder="Street Address Line 1" name="streetAddress1" value={address.streetAddress1} onChange={handleChange} />
+            <input className={style.addressInput} placeholder="Street Address Line 2" name="streetAddress2" value={address.streetAddress2} onChange={handleChange} />
+            <input className={style.addressInput} placeholder="City" name="city" value={address.city} onChange={handleChange} />
+            <input className={style.addressInput} placeholder="State/Province/Region" name="stateProvinceRegion" value={address.stateProvinceRegion} onChange={handleChange} />
+            <input className={style.addressInput} placeholder="Postal Code" name="postalCode" value={address.postalCode} onChange={handleChange} />
+            <input className={style.addressInput} placeholder="Country" name="country" value={address.country} onChange={handleChange} />
+            {!showConfirmOrder && (
+              <button className={style.confirmOrderButton} onClick={handleEstimatePrice}>
+                Estimate Price
+              </button>
+            )}
+            {showConfirmOrder && (
+              <>
+                <div>Estimated Price: {estimatedPrice}</div>
+                <button className={style.confirmOrderButton} onClick={handleConfirmOrder}>
+                  Confirm Order
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
 };
 
 export default NFTCard;

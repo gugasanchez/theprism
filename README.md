@@ -19,8 +19,6 @@ Curious about how The Prism transforms digital art into fashion? Watch our demo 
 
 👉 [Explore our marketplace](localhost:5173)
 
-## 🔗 Smart Contracts & On-chain Operations
-
 ### System Architecture
 
 ![The Prism Architecture](https://github.com/your-github/the-prism/assets/architecture.png)

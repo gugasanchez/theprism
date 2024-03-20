@@ -19,7 +19,7 @@ Curious about how The Prism transforms digital art into fashion? Watch our demo 
 
 👉 [Explore our marketplace](localhost:5173)
 
-### System Architecture
+## 🏗️ System Architecture
 
 ![The Prism Architecture](https://github.com/your-github/the-prism/assets/architecture.png)
 
@@ -37,6 +37,29 @@ Particle Connect provides effortless Web3 onboarding, allowing you to manage you
 
 - **User Profile**
   Manage your profile [here](https://the-prism.io/profile).
+
+## 📌 Run The Prism Locally
+
+### Prerequisites
+- Node.js installed (preferably the latest stable version)
+- Git installed on your machine
+
+### Installation
+```
+git clone https://github.com/gugasanchez/theprism.git
+cd theprism
+```
+
+### Setting up the Frontend
+```
+cd client
+npm install
+npm run dev
+```
+The frontend should now be running on `http://localhost:5173` (or another port specified in the console output).
+
+### Setting up the Backend
+
 
 ## 👥 Team Prism
 

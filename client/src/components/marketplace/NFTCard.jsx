@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { BiHeart } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
+import { IERC20__factory, ERC20Portal__factory } from "../../utils/generated/rollups";
+import { useParticleProvider } from "@particle-network/connect-react-ui";
+import { ethers } from "ethers";
+
 const style = {
   wrapper: `bg-[#303339] flex-auto w-[14rem] h-[22rem] my-5 mx-5 rounded-2xl overflow-hidden relative group`,
   imgContainer: `relative h-2/3 w-full overflow-hidden flex justify-center items-center`,
@@ -31,6 +35,7 @@ const style = {
 };
 
 const NFTCard = ({ nftItem, title, listings }) => {
+  const ParticleProvider = useParticleProvider();
   const [isListed, setIsListed] = useState(false);
   const [price, setPrice] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -47,6 +52,7 @@ const NFTCard = ({ nftItem, title, listings }) => {
   });
 
   const navigate = useNavigate(); // Create an instance of useNavigate
+  const dappAddress = "0x"; //ATUALIZAR
 
   useEffect(() => {
     const listing = listings.find(listing => listing.asset.id === nftItem.id);
@@ -70,9 +76,41 @@ const NFTCard = ({ nftItem, title, listings }) => {
     setAddress(prevState => ({ ...prevState, [name]: value }));
   };
 
-  const handleConfirmOrder = () => {
-    toggleModal(); // Close the modal
-    navigate('/orders'); // Redirect to the orders page
+  const handleConfirmOrder = async () => {
+    try {
+      if (ParticleProvider) {
+          const amount = 49;
+          const token = "0x6b175474e89094c44da98b954eedeac495271d0f"; //ATUALIZAR
+          const data = ethers.utils.toUtf8Bytes(`Deposited (${amount}) of ERC20 (${token}).`);
+
+          const customProvider = new ethers.providers.Web3Provider(ParticleProvider);
+          const signer = customProvider.getSigner();
+          const signerAddress = await signer.getAddress();
+
+          const erc20PortalAddress = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB";
+          const tokenContract = signer ? IERC20__factory.connect(token, signer) : IERC20__factory.connect(token, customProvider);
+
+          // query current allowance
+          const currentAllowance = await tokenContract.allowance(signerAddress, erc20PortalAddress);
+          if (ethers.utils.parseEther(`${amount}`) > currentAllowance) {
+              // Allow portal to withdraw `amount` tokens from signer
+              const tx = await tokenContract.approve(erc20PortalAddress, ethers.utils.parseEther(`${amount}`));
+              const receipt = await tx.wait(1);
+              const event = (await tokenContract.queryFilter(tokenContract.filters.Approval(), receipt.blockHash)).pop();
+              if (!event) {
+                  throw Error(`could not approve ${amount} tokens for DAppERC20Portal(${erc20PortalAddress})  (signer: ${signerAddress}, tx: ${tx.hash})`);
+              }
+          }
+
+          const erc20PortalContract = ERC20Portal__factory.connect(erc20PortalAddress, signer);
+
+          await erc20PortalContract.depositERC20Tokens(token, dappAddress, ethers.utils.parseEther(`${amount}`), data);
+          toggleModal(); // Close the modal
+          navigate('/orders'); // Redirect to the orders page
+      }
+  } catch (e) {
+      console.log(`${e}`);
+  }
   };
 
   return (

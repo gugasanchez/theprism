@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         appId: import.meta.env.VITE_PARTICLE_APP_ID,  
         chains: [
           Ethereum,
-          EthereumGoerli
+          EthereumGoerli,
         ],
         particleWalletEntry: {
           displayWalletEntry: true,

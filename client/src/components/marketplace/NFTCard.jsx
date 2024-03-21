@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ethers } from "ethers";
+import { useRollups } from "../../utils/useRollups";
+import { useWallets } from "@web3-onboard/react";
+import { IERC20__factory } from "./generated/rollups";
 import { BiHeart } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -46,6 +50,13 @@ const NFTCard = ({ nftItem, title, listings }) => {
     country: '',
   });
 
+  const dappAddress = "0x";
+  const rollups = useRollups(dappAddress);
+  const [connectedWallet] = useWallets();
+  const provider = new ethers.providers.Web3Provider(
+    connectedWallet.provider
+);
+
   const navigate = useNavigate(); // Create an instance of useNavigate
 
   useEffect(() => {
@@ -70,10 +81,41 @@ const NFTCard = ({ nftItem, title, listings }) => {
     setAddress(prevState => ({ ...prevState, [name]: value }));
   };
 
-  const handleConfirmOrder = () => {
-    toggleModal(); // Close the modal
-    navigate('/orders'); // Redirect to the orders page
-  };
+  const handleConfirmOrder = async () => {
+
+    try {
+      if (rollups && provider) {
+          const token = "0x";
+
+          const data = ethers.utils.toUtf8Bytes(`Deposited (${amount}) of ERC20 (${token}).`);
+          //const data = `Deposited ${args.amount} tokens (${args.token}) for DAppERC20Portal(${portalAddress}) (signer: ${address})`;
+          const signer = provider.getSigner();
+          const signerAddress = await signer.getAddress()
+
+          const erc20PortalAddress = rollups.erc20PortalContract.address;
+          const tokenContract = signer ? IERC20__factory.connect(token, signer) : IERC20__factory.connect(token, provider);
+
+          // query current allowance
+          const currentAllowance = await tokenContract.allowance(signerAddress, erc20PortalAddress);
+          if (ethers.utils.parseEther(`${amount}`) > currentAllowance) {
+              // Allow portal to withdraw `amount` tokens from signer
+              const tx = await tokenContract.approve(erc20PortalAddress, ethers.utils.parseEther(`${amount}`));
+              const receipt = await tx.wait(1);
+              const event = (await tokenContract.queryFilter(tokenContract.filters.Approval(), receipt.blockHash)).pop();
+              if (!event) {
+                  throw Error(`could not approve ${amount} tokens for DAppERC20Portal(${erc20PortalAddress})  (signer: ${signerAddress}, tx: ${tx.hash})`);
+              }
+          }
+
+          await rollups.erc20PortalContract.depositERC20Tokens(token, dappAddress,ethers.utils.parseEther(`${amount}`), data);
+
+          toggleModal(); // Close the modal
+          navigate('/orders'); // Redirect to the orders page
+      }
+  } catch (e) {
+      console.log(`${e}`);
+  }
+};
 
   return (
     <div className={style.wrapper}>

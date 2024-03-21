@@ -135,30 +135,25 @@ def list_orders_by_user(user_id):
 def list_orders_by_design(design_id):
     return [order for order in orders.values() if order["design_id"] == design_id]
 
-def handle_erc20_deposit(data):
-    binary = bytes.fromhex(data["payload"][2:])
-    try:
-        decoded = decode_packed(['bool','address','address','uint256'], binary)
-    except Exception as e:
-        # payload does not conform to ERC20 deposit ABI
-        return "reject"
-
-    # success = decoded[0]
-    erc20 = decoded[1]
-    depositor = decoded[2]
-    amount = decoded[3]
-    # Post notice about the deposit
-    notice_str = f"Deposit received from: {depositor}; ERC-20: {erc20}; Amount: {amount}"
+def handle_erc20_deposit(binary):
+    token_address = binary[1:21]
+    depositor = binary[21:41]
+    amount = int.from_bytes(binary[41:73], "big")
+    erc20_deposit = {
+        "depositor": binary2hex(depositor),
+        "token_address": binary2hex(token_address),
+        "amount": amount,
+    }
+    logger.info({"payload": str2hex(f"Decode new erc20 deposit {erc20_deposit}")})
+    notice_str = f"Deposit received from: {depositor}; ERC-20: {token_address}; Amount: {amount}"
     logger.info(f"Adding notice: {notice_str}")
     notice = {"payload": str2hex(notice_str)}
     send_notice(notice)
     
-def handle_erc721_deposit(data):
-    binary = bytes.fromhex(data["payload"][2:])
+def handle_erc721_deposit(binary):
     try:
         decoded = decode_packed(['address', 'address', 'uint256'], binary)
     except Exception as e:
-        # payload does not conform to ERC721 deposit ABI
         return "reject"
 
     erc721 = decoded[0]
@@ -184,10 +179,12 @@ def erc721_safetransfer_voucher(token_address,receiver,id):
 
 def handle_advance(data):
 
-    logger.info(f"Receiving advance request with data {hex2str(data['payload'])} from {data['metadata']['msg_sender']}")
-    
-    binary = hex2str(data['payload'])
-    json_data = json.loads(binary)    
+    # logger.info(f"Receiving advance request with data {hex2str(data['payload'])} from {data['metadata']['msg_sender']}")
+    try:
+        binary = hex2str(data['payload'])
+        json_data = json.loads(binary)    
+    except:
+        binary = hex2binary(data['payload'])
     
     try:
         
@@ -198,7 +195,7 @@ def handle_advance(data):
             send_report({"payload": str2hex(f"Set rollup_address {rollup_address}")})
         
         elif msg_sender.lower() == ERC20_PORTAL_ADDRESS.lower():
-            handle_erc20_deposit(data)
+            handle_erc20_deposit(hex2binary(data['payload']))
         
         elif msg_sender.lower() == ERC721_PORTAL_ADDRESS.lower():
             handle_erc721_deposit(data)

@@ -102,8 +102,8 @@ const NFTCard = ({ nftItem, title, listings }) => {
 
     try {
       if (signer) {
-        const amount = 49;
-        const token = "0x6b175474e89094c44da98b954eedeac495271d0f"; //ATUALIZAR
+        const amount = 100;
+        const token = "0x40cA740637f4181D63D3d9a09d55FC55274CED5D";
         const data = ethers.utils.toUtf8Bytes(`Deposited (${amount}) of ERC20 (${token}).`);
 
         const signerAddress = await signer.getAddress();

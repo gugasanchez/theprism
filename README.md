@@ -15,10 +15,6 @@ Unleash your creativity with The Prism, a cutting-edge platform where art meets 
 
 Curious about how The Prism transforms digital art into fashion? Watch our demo to see the future of digital creativity.
 
-👉 [Watch our demo](https://www.youtube.com/)
-
-👉 [Explore our marketplace](localhost:5173)
-
 ## 🏗️ System Architecture
 <p float="left">
   <img src="https://github.com/gugasanchez/theprism/assets/62973287/659ae2a4-095c-42d1-bbac-f07d4656c6dc" width="150" />

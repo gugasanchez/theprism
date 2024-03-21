@@ -20,8 +20,12 @@ Curious about how The Prism transforms digital art into fashion? Watch our demo 
 👉 [Explore our marketplace](localhost:5173)
 
 ## 🏗️ System Architecture
+<p float="left">
+  <img src="https://github.com/gugasanchez/theprism/assets/62973287/659ae2a4-095c-42d1-bbac-f07d4656c6dc" width="150" />
+  <img src="https://github.com/gugasanchez/theprism/assets/62973287/6617f73f-f89b-4ef4-bc57-37dcb0234939" width="150" /> 
+  <img src="https://github.com/gugasanchez/theprism/assets/62973287/bf7928ea-cd22-4f87-b5b5-7f16874fae40" width="150" />
+</p>
 
-![The Prism Architecture](https://github.com/your-github/the-prism/assets/architecture.png)
 
 ## 🌐 Particle Connect
 

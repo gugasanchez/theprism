@@ -64,7 +64,9 @@ The frontend should now be running on `http://localhost:5173` (or another port s
 
 ### Setting up the Backend
 
-#### ⚠ The code within dApp Diffusion directory is intended for research and development purposes, aimed at continuing the effort to execute Stable Diffusion on Cartesi. We have made significant progress in running it with Docker, but we are currently encountering a cache issue when downloading the Stable Diffusion 1.5 model. Therefore, please do not attempt to run this directory; it is meant to be finalized in the continuation of the development process. 
+#### ⚠ The code within dApp Diffusion directory is intended for research and development purposes, aimed at continuing the effort to execute Stable Diffusion on Cartesi. We have made significant progress in running it with Docker, but we are currently encountering a cache issue when downloading the Stable Diffusion 1.5 model.
+
+#### Therefore, please do not attempt to run this directory; it is meant to be finalized in the continuation of the development process. 
 
 
 ## 👥 Team Prism

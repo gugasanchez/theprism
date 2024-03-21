@@ -8,12 +8,8 @@ Unleash your creativity with The Prism, a cutting-edge platform where art meets 
 
 - **AI-Powered Design**: Turn your inspirations into digital art, authenticated and minted on-chain using Cartesi Rollups.
 - **Seamless Transition to Tangibles**: Easily convert your digital art into custom-made t-shirts through our network of quality producers.
-- **Web3 Wallet Integration**: Simple login using Metamask and social login through Particle Connect for a seamless user experience.
+- **Web3 Wallet Integration**: Simple login using Metamask and Web3 wallet of your preference.
 - **Ownership and Royalties**: Mint your art as NFTs and get rewarded for your creativity through a transparent royalty system.
-
-## 🚀 See The Prism in Action
-
-Curious about how The Prism transforms digital art into fashion? Watch our demo to see the future of digital creativity.
 
 ## 🏗️ System Architecture
 <p float="left">
@@ -21,22 +17,6 @@ Curious about how The Prism transforms digital art into fashion? Watch our demo 
   <img src="https://github.com/gugasanchez/theprism/assets/62973287/6617f73f-f89b-4ef4-bc57-37dcb0234939" width="150" /> 
   <img src="https://github.com/gugasanchez/theprism/assets/62973287/bf7928ea-cd22-4f87-b5b5-7f16874fae40" width="150" />
 </p>
-
-
-## 🌐 Particle Connect
-
-Particle Connect provides effortless Web3 onboarding, allowing you to manage your wallet with just a few clicks.
-
-## 🔍 Quick Links
-
-- **Create Art**
-  Create your unique design [here](https://the-prism.io/create).
-
-- **Marketplace**
-  Visit our marketplace [here](https://the-prism.io/marketplace).
-
-- **User Profile**
-  Manage your profile [here](https://the-prism.io/profile).
 
 ## 📌 Run The Prism Locally
 
@@ -60,11 +40,19 @@ The frontend should now be running on `http://localhost:5173` (or another port s
 
 ### Setting up the Backend
 
-#### ⚠ The code within the_prism_diffusion directory is intended for research and development purposes, aimed at continuing the effort to execute Stable Diffusion on Cartesi. We have made significant progress in running it with Docker, but we are currently encountering a cache issue when downloading the Stable Diffusion 1.5 model.
+```
+cd the_prism_dapp
+sunodo build
+sunodo run
+```
+
+#### ⚠ 1. Remember to deploy an ERC-20 Contract locally if you want to sign a Metamask transaction to buy a t-shirt ("Confirm order" button).
+
+#### ⚠ 2. The code within the_prism_diffusion directory is intended for research and development purposes, aimed at continuing the effort to execute Stable Diffusion on Cartesi. We have made significant progress in running it with Docker, but we are currently encountering a cache issue when downloading the Stable Diffusion 1.5 model.
 
 #### Therefore, please do not attempt to run this directory; it is meant to be finalized in the continuation of the development process. 
 
-## Stable Diffusion <> The Prism
+## 🤖 Stable Diffusion <> The Prism
 
 ### How It Works Now
 Currently, our system operates by taking a user's design prompt through our frontend interface. The core of our process involves the Stable Diffusion model, which utilizes a pre-prepared t-shirt image as a base. With the right parameters set for the Stable Diffusion model, it generates a new t-shirt overlaying the base image with a print that visualizes the user's design idea. This innovative approach allows for quick and customized design generation directly influenced by user input.
@@ -91,13 +79,16 @@ Currently, our system operates by taking a user's design prompt through our fron
 ### Conclusion
 Our project is at the forefront of combining machine learning with fashion design, creating a unique platform for personalized apparel. As we continue to develop and refine our technology, we aim to offer users an unparalleled ability to bring their creative visions to life, whether through owning a unique piece of wearable art or by stepping into the role of a designer in the digital marketplace.
 
-
-
 ## 👥 Team Prism
 
 - [@ryanviana](https://www.github.com/ryanviana)
 - [@pjvperes](https://www.github.com/pjvperes)
 - [@gugasanchez](https://www.github.com/gugasanchez)
+
+## 📁 Resources
+
+- [Forbes | The Hyper-Personalization trend](https://www.forbes.com/sites/eladnatanson/2023/06/01/hyper-personalization-is-already-here---its-future-is-even-more-cutting-edge/?sh=414917c55cc2)
+- [Forbes | E-commerce 3.0](https://www.forbes.com/sites/onmarketing/2023/08/23/e-commerce-30-the-future-of-retail-is-hyper-personalized/?sh=43c9ce693d30)
 
 ---
 

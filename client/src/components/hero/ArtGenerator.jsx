@@ -13,7 +13,7 @@ const ArtGenerator = () => {
     setArt(!art);
     setTimeout(() => {
       setShowLoadingText(false);
-    }, 1000);
+    }, 3000);
   };
 
   const handleGenerateNFT = (e) => {

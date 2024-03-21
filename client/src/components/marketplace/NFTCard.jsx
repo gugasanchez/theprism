@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from "ethers";
-import { useRollups } from "../../utils/useRollups";
-import { IERC20__factory } from "../../generated/rollups";
+// import { useRollups } from "../../utils/useRollups";
+import { IERC20__factory, ERC20Portal__factory } from "../../generated/rollups";
 import { BiHeart } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -70,7 +70,7 @@ const NFTCard = ({ nftItem, title, listings }) => {
   });
 
   const dappAddress = "0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C";
-  const rollups = useRollups(dappAddress);
+  // const rollups = useRollups(dappAddress);
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
 
@@ -101,33 +101,31 @@ const NFTCard = ({ nftItem, title, listings }) => {
   const handleConfirmOrder = async () => {
 
     try {
-      if (rollups && signer) {
-          const token = "0x";
+      if (signer) {
+        const amount = 49;
+        const token = "0x6b175474e89094c44da98b954eedeac495271d0f"; //ATUALIZAR
+        const data = ethers.utils.toUtf8Bytes(`Deposited (${amount}) of ERC20 (${token}).`);
 
-          const data = ethers.utils.toUtf8Bytes(`Deposited (${amount}) of ERC20 (${token}).`);
-          //const data = `Deposited ${args.amount} tokens (${args.token}) for DAppERC20Portal(${portalAddress}) (signer: ${address})`;
-          const signer = provider.getSigner();
-          const signerAddress = await signer.getAddress()
+        const signerAddress = await signer.getAddress();
 
-          const erc20PortalAddress = rollups.erc20PortalContract.address;
-          const tokenContract = signer ? IERC20__factory.connect(token, signer) : IERC20__factory.connect(token, provider);
+        const erc20PortalAddress = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB";
+        const tokenContract = signer ? IERC20__factory.connect(token, signer) : IERC20__factory.connect(token, provider);
 
-          // query current allowance
-          const currentAllowance = await tokenContract.allowance(signerAddress, erc20PortalAddress);
-          if (ethers.utils.parseEther(`${amount}`) > currentAllowance) {
-              // Allow portal to withdraw `amount` tokens from signer
-              const tx = await tokenContract.approve(erc20PortalAddress, ethers.utils.parseEther(`${amount}`));
-              const receipt = await tx.wait(1);
-              const event = (await tokenContract.queryFilter(tokenContract.filters.Approval(), receipt.blockHash)).pop();
-              if (!event) {
-                  throw Error(`could not approve ${amount} tokens for DAppERC20Portal(${erc20PortalAddress})  (signer: ${signerAddress}, tx: ${tx.hash})`);
-              }
-          }
+        // query current allowance
+        const currentAllowance = await tokenContract.allowance(signerAddress, erc20PortalAddress);
+        if (ethers.utils.parseEther(`${amount}`) > currentAllowance) {
+            // Allow portal to withdraw `amount` tokens from signer
+            const tx = await tokenContract.approve(erc20PortalAddress, ethers.utils.parseEther(`${amount}`));
+            const receipt = await tx.wait(1);
+            const event = (await tokenContract.queryFilter(tokenContract.filters.Approval(), receipt.blockHash)).pop();
+            if (!event) {
+                throw Error(`could not approve ${amount} tokens for DAppERC20Portal(${erc20PortalAddress})  (signer: ${signerAddress}, tx: ${tx.hash})`);
+            }
+        }
 
-          await rollups.erc20PortalContract.depositERC20Tokens(token, dappAddress,ethers.utils.parseEther(`${amount}`), data);
+        const erc20PortalContract = ERC20Portal__factory.connect(erc20PortalAddress, signer);
 
-          toggleModal(); // Close the modal
-          navigate('/orders'); // Redirect to the orders page
+        await erc20PortalContract.depositERC20Tokens(token, dappAddress, ethers.utils.parseEther(`${amount}`), data);
       }
   } catch (e) {
       console.log(`${e}`);

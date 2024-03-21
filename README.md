@@ -64,8 +64,6 @@ The frontend should now be running on `http://localhost:5173` (or another port s
 
 #### Therefore, please do not attempt to run this directory; it is meant to be finalized in the continuation of the development process. 
 
-
-
 ## 👥 Team Prism
 
 - [@ryanviana](https://www.github.com/ryanviana)
@@ -73,6 +71,9 @@ The frontend should now be running on `http://localhost:5173` (or another port s
 - [@gugasanchez](https://www.github.com/gugasanchez)
 
 ---
+
+🐦 [**Follow us on X**](https://twitter.com/theprism_ctsi)
+
 
 © 2024 The Prism. A new spectrum of digital art and fashion.
 

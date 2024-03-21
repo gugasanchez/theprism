@@ -79,6 +79,10 @@ Currently, our system operates by taking a user's design prompt through our fron
 ### Conclusion
 Our project is at the forefront of combining machine learning with fashion design, creating a unique platform for personalized apparel. As we continue to develop and refine our technology, we aim to offer users an unparalleled ability to bring their creative visions to life, whether through owning a unique piece of wearable art or by stepping into the role of a designer in the digital marketplace.
 
+## Pitch Slides
+- [The Prism | Pitch | Cartesi Hackathon.pdf](https://github.com/gugasanchez/theprism/files/14706864/The.Prism.Pitch.Cartesi.Hackathon.pdf)
+
+
 ## 📁 Resources
 
 - [Forbes | The Hyper-Personalization trend](https://www.forbes.com/sites/eladnatanson/2023/06/01/hyper-personalization-is-already-here---its-future-is-even-more-cutting-edge/?sh=414917c55cc2)

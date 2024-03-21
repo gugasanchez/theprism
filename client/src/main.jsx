@@ -4,7 +4,7 @@ import App from './App';
 import './index.css';
 import { ModalProvider } from '@particle-network/connect-react-ui';
 import { WalletEntryPosition } from '@particle-network/auth';
-import { Ethereum, EthereumGoerli } from '@particle-network/chains';
+import { Ethereum, EthereumSepolia } from '@particle-network/chains';
 import { evmWallets } from '@particle-network/connect';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -16,14 +16,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         appId: import.meta.env.VITE_PARTICLE_APP_ID,  
         chains: [
           Ethereum,
-          EthereumGoerli,
+          EthereumSepolia,
         ],
         particleWalletEntry: {
           displayWalletEntry: true,
           defaultWalletEntryPosition: WalletEntryPosition.BR,
           supportChains:[
             Ethereum,
-            EthereumGoerli  
+            EthereumSepolia  
           ],
           customStyle: {},
         },

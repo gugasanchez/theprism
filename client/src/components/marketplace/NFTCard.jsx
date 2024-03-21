@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from "ethers";
 import { useRollups } from "../../utils/useRollups";
-import { useWallets } from "@web3-onboard/react";
-import { IERC20__factory } from "./generated/rollups";
+import { IERC20__factory } from "../../generated/rollups";
 import { BiHeart } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -35,6 +34,26 @@ const style = {
 };
 
 const NFTCard = ({ nftItem, title, listings }) => {
+  useEffect(() => {
+    const init = async () => {
+      if (window.ethereum) {
+        try {
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const signer = provider.getSigner();
+          setProvider(provider);
+          setSigner(signer);
+        } catch (error) {
+          console.error('Error on initializing the provider:', error);
+        }
+      } else {
+        console.log('MetaMask is not installed. Please install it to use this app.');
+      }
+    };
+
+    init();
+  }, []);
+
+
   const [isListed, setIsListed] = useState(false);
   const [price, setPrice] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -50,14 +69,12 @@ const NFTCard = ({ nftItem, title, listings }) => {
     country: '',
   });
 
-  const dappAddress = "0x";
+  const dappAddress = "0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C";
   const rollups = useRollups(dappAddress);
-  const [connectedWallet] = useWallets();
-  const provider = new ethers.providers.Web3Provider(
-    connectedWallet.provider
-);
+  const [provider, setProvider] = useState(null);
+  const [signer, setSigner] = useState(null);
 
-  const navigate = useNavigate(); // Create an instance of useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const listing = listings.find(listing => listing.asset.id === nftItem.id);
@@ -84,7 +101,7 @@ const NFTCard = ({ nftItem, title, listings }) => {
   const handleConfirmOrder = async () => {
 
     try {
-      if (rollups && provider) {
+      if (rollups && signer) {
           const token = "0x";
 
           const data = ethers.utils.toUtf8Bytes(`Deposited (${amount}) of ERC20 (${token}).`);

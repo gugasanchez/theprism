@@ -1,6 +1,6 @@
 import React from "react";
 import '@particle-network/connect-react-ui/dist/index.css';
-import { ConnectButton } from '@particle-network/connect-react-ui';
+import ConnectWalletButton from '../ConnectWalletButton'; // Adjust the import path based on your file structure
 
 const Hero = () => {
   return (
@@ -14,7 +14,7 @@ const Hero = () => {
           Then, easily bring those designs to life through expert producers.
         </p>
         <div className="mt-4">
-          <ConnectButton />
+            <ConnectWalletButton />
         </div>
       </div>
     </div>

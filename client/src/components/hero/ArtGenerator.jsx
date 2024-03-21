@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
+import Art from "../../utils/dog_and_cat.png";
 
 const ArtGenerator = () => {
   const [showResult, setShowResult] = useState(false);
   const [art, setArt] = useState(false);
+  const [showLoadingText, setShowLoadingText] = useState(true); // State to manage loading text visibility
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setShowResult(true);
+    setShowLoadingText(true); // Show loading text initially
     setArt(!art);
+    setTimeout(() => {
+      setShowLoadingText(false);
+    }, 3000);
   };
 
   const handleGenerateNFT = (e) => {
@@ -44,12 +50,15 @@ const ArtGenerator = () => {
         {showResult && (
           <div className="w-full mt-4 flex flex-col justify-start items-center gap-4">
             <div className="p-5 w-full flex flex-col justify-start items-center min-h-[300px] blue-glassmorphism">
-              <p className="text-white font-light text-sm">
-                Your art is being created...
-              </p>
-              {/* Display art creation result or loading state here */}
+              {/* Show loading text or the image based on `showLoadingText` state */}
+              {showLoadingText ? (
+                <p className="text-white font-light text-sm">
+                  Your art is being created...
+                </p>
+              ) : (
+                <img src={Art} alt="Your art is being created..." style={{ width: '400px' }} />
+              )}
             </div>
-            {/* Ensure that the container is a flex row and justify the content to the end */}
             <div className="flex w-full justify-end px-5">
               <button
                 type="button"

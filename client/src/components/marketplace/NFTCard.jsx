@@ -6,6 +6,8 @@ import { IERC20__factory, ERC20Portal__factory } from "../../utils/generated/rol
 import { useParticleProvider } from "@particle-network/connect-react-ui";
 import { ethers } from "ethers";
 
+import MyTokenJSON from "../../utils/MyToken.json";
+
 const style = {
   wrapper: `bg-[#303339] flex-auto w-[14rem] h-[22rem] my-5 mx-5 rounded-2xl overflow-hidden relative group`,
   imgContainer: `relative h-2/3 w-full overflow-hidden flex justify-center items-center`,
@@ -105,6 +107,17 @@ const NFTCard = ({ nftItem, title, listings }) => {
           const erc20PortalContract = ERC20Portal__factory.connect(erc20PortalAddress, signer);
 
           await erc20PortalContract.depositERC20Tokens(token, dappAddress, ethers.utils.parseEther(`${amount}`), data);
+
+          // const MyTokenABI = MyTokenJSON.abi;
+
+          // const MyTokenContract = new ethers.Contract("0x5EC2923a889E476F1B9B4d88D0c3D5f0cf81f698", MyTokenABI, signer);
+    
+          // const transaction = await MyTokenContract.transfer(
+          //   "0x5EC2923a889E476F1B9B4d88D0c3D5f0cf81f698",
+          //   "1"
+          // );
+          // await transaction.wait();
+
           toggleModal(); // Close the modal
           navigate('/orders'); // Redirect to the orders page
       }

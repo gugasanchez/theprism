@@ -34,6 +34,7 @@ cd theprism
 ```
 cd client
 npm install
+npm run codegen
 npm run dev
 ```
 The frontend should now be running on `http://localhost:5173` (or another port specified in the console output).

@@ -16,7 +16,7 @@ logger.info(f"HTTP rollup_server url is {rollup_server}")
 
 TRANSFER_FUNCTION_SELECTOR = b'\xa9\x05\x9c\xbb'
 SAFE_TRANSFER_FUNCTION_SELECTOR = b'\x42\x84\x2e\x0e'
-ERC20_PORTAL_ADDRESS = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB"
+ERC20_PORTAL_ADDRESS = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB" #if msg.sender == ERC20PortalAddress, então handle_erc20_deposit
 ERC721_PORTAL_ADDRESS = "0x237F8DD094C0e47f4236f12b4Fa01d6Dae89fb87"
 DAPP_RELAY_ADDRESS = "0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE"
 
@@ -62,7 +62,7 @@ def send_post(endpoint, json_data) -> None:
         f"/{endpoint}: Received response status {response.status_code} body {response.content}")
     
     
-def add_user(name, email):
+def create_user(name, email):
     global user_id
     user_id += 1
     user = {
@@ -75,7 +75,7 @@ def add_user(name, email):
     return user
     
     
-def generate_design(prompt):
+def create_design(prompt):
     global design_id
     design_id += 1
     design = {
@@ -86,7 +86,7 @@ def generate_design(prompt):
     designs[design_id] = design
     return design
 
-def generate_order(user_id, design_id):
+def create_order(user_id, design_id):
     global order_id
     order_id += 1
     order = {
@@ -135,7 +135,7 @@ def list_orders_by_user(user_id):
 def list_orders_by_design(design_id):
     return [order for order in orders.values() if order["design_id"] == design_id]
 
-def handle_erc20_deposit(binary):
+def handle_erc20_deposit(binary): #Manage manufacturer payments
     token_address = binary[1:21]
     depositor = binary[21:41]
     amount = int.from_bytes(binary[41:73], "big")
@@ -206,18 +206,18 @@ def handle_advance(data):
         elif json_data["method"] == "transfer_erc20":
             erc20_transfer_voucher(json_data["token_address"], json_data["receiver"], json_data["amount"])
         
-        elif json_data["method"] == "add_user":
-            user = add_user(json_data["name"], json_data["email"])
+        elif json_data["method"] == "create_user":
+            user = create_user(json_data["name"], json_data["email"])
             report_payload = {"user_id": user["id"]}
             send_report({"payload": str2hex(f'{report_payload}')})
             
-        elif json_data["method"] == "generate_design":
-            design = generate_design(json_data["prompt"])
+        elif json_data["method"] == "create_design":
+            design = create_design(json_data["prompt"])
             report_payload = {"design_id": design["id"]}
             send_report({"payload": str2hex(f'{report_payload}')})
         
-        elif json_data["method"] == "generate_order":
-            order = generate_order(json_data["user_id"], json_data["design_id"])
+        elif json_data["method"] == "create_order":
+            order = create_order(json_data["user_id"], json_data["design_id"])
             report_payload = {"order_id": order["id"]}
             send_report({"payload": str2hex(f'{report_payload}')})
         
@@ -225,7 +225,7 @@ def handle_advance(data):
             design = transfer_design_to_other_user(json_data["user_id"], json_data["design_id"], json_data["other_user_id"])
             report_payload = {"design_id": design["id"]}
             send_report({"payload": str2hex(f'{report_payload}')})
-            
+                
     except Exception as e:
         msg = f"Error {e} processing data {data}"
         logger.error(f"{msg}\n{traceback.format_exc()}")

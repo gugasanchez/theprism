@@ -13,7 +13,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
   busybox-static=1:1.30.1-7ubuntu3 \
   build-essential \
-  && rm -rf /var/lib/apt/lists/* /var/log/* /var/cache/* # Cleans up after installation
+  && rm -rf /var/lib/apt/lists/* /var/log/* /var/cache/*
 
 RUN useradd --create-home --user-group dapp
 
@@ -26,7 +26,6 @@ RUN pip install -r requirements.txt --no-cache \
   && find /usr/local/lib/python3.10/site-packages -type d -name '__pycache__' -exec rm -r {} +
 
 COPY ./dapp.py .
-COPY ./eth_abi_ext.py .
 
 ENV ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004"
 

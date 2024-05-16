@@ -5,8 +5,9 @@ import json
 import traceback
 import base64
 from eth_abi.abi import encode
-from eth_abi_ext import decode_packed
-
+from cartesi import Rollup, RollupData, abi
+from cartesi.vouchers import create_voucher_from_model
+from pydantic import BaseModel
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ SAFE_TRANSFER_FUNCTION_SELECTOR = b'\x42\x84\x2e\x0e'
 ERC20_PORTAL_ADDRESS = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB" #if msg.sender == ERC20PortalAddress, então handle_erc20_deposit
 ERC721_PORTAL_ADDRESS = "0x237F8DD094C0e47f4236f12b4Fa01d6Dae89fb87"
 DAPP_RELAY_ADDRESS = "0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE"
+DESIGN_NFT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 rollup_address = None
 
@@ -29,6 +31,10 @@ order_id = 0
 users = {}
 designs = {}
 orders = {}
+
+class MintArgs(BaseModel):
+    to: abi.Address
+    tokenURI: abi.String
 
 def str2hex(string):
     return binary2hex(str2binary(string))
@@ -73,18 +79,27 @@ def create_user(name, email):
     }
     users[user_id] = user
     return user
-    
-    
-def create_design(prompt):
+
+def create_design(prompt, contractAddress, userAddress: abi.Address, tokenURI: abi.String):
     global design_id
     design_id += 1
     design = {
         "id": design_id,
         "prompt": prompt,
-        "image": encode_image_to_base64(f"design_{design_id}.png")
+        "image": tokenURI
+        #"image": encode_image_to_base64(f"design_{design_id}.png")
     }
     designs[design_id] = design
-    return design
+    args = MintArgs(to=userAddress, tokenURI=tokenURI)
+
+    voucher = create_voucher_from_model(
+        destination=contractAddress,
+        function_name='createNFT',
+        args_model=args,
+    )
+
+    return design, voucher
+
 
 def create_order(user_id, design_id):
     global order_id
@@ -149,21 +164,6 @@ def handle_erc20_deposit(binary): #Manage manufacturer payments
     logger.info(f"Adding notice: {notice_str}")
     notice = {"payload": str2hex(notice_str)}
     send_notice(notice)
-    
-def handle_erc721_deposit(binary):
-    try:
-        decoded = decode_packed(['address', 'address', 'uint256'], binary)
-    except Exception as e:
-        return "reject"
-
-    erc721 = decoded[0]
-    depositor = decoded[1]
-    token_id = decoded[2]
-    #Post notice about the deposit
-    notice_str = f"Deposit received from: {depositor}; ERC-721: {erc721}; Token ID: {token_id}"
-    logger.info(f"Adding notice: {notice_str}")
-    notice = {"payload": str2hex(notice_str)}
-    send_notice(notice)
 
 def erc20_transfer_voucher(token_address,receiver,amount):
     transfer_payload = TRANSFER_FUNCTION_SELECTOR + encode(['address','uint256'], [receiver, amount])
@@ -197,9 +197,6 @@ def handle_advance(data):
         elif msg_sender.lower() == ERC20_PORTAL_ADDRESS.lower():
             handle_erc20_deposit(hex2binary(data['payload']))
         
-        elif msg_sender.lower() == ERC721_PORTAL_ADDRESS.lower():
-            handle_erc721_deposit(data)
-        
         elif json_data["method"] == "transfer_erc721":
             erc721_safetransfer_voucher(json_data["token_address"], json_data["receiver"], json_data["id"])
         
@@ -212,7 +209,7 @@ def handle_advance(data):
             send_report({"payload": str2hex(f'{report_payload}')})
             
         elif json_data["method"] == "create_design":
-            design = create_design(json_data["prompt"])
+            design = create_design(json_data["prompt"], json_data["contractAddress"], json_data["userAddress"], json_data["tokenURI"])
             report_payload = {"design_id": design["id"]}
             send_report({"payload": str2hex(f'{report_payload}')})
         

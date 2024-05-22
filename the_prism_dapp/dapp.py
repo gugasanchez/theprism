@@ -1,26 +1,42 @@
 from os import environ
+from eth_abi import encode
 import logging
 import requests
 import json
 import traceback
 import base64
+import web3
 from eth_abi.abi import encode
-from cartesi import Rollup, RollupData, abi
-from cartesi.vouchers import create_voucher_from_model
 from pydantic import BaseModel
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
-rollup_server = environ["ROLLUP_HTTP_SERVER_URL"]
+rollup_server = "http://localhost:5004"
+if "ROLLUP_HTTP_SERVER_URL" in environ:
+    rollup_server = environ["ROLLUP_HTTP_SERVER_URL"]
+
 logger.info(f"HTTP rollup_server url is {rollup_server}")
+
+# LOGGER = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.DEBUG)
+# dapp = DApp()
+w3 = web3.Web3()
 
 TRANSFER_FUNCTION_SELECTOR = b'\xa9\x05\x9c\xbb'
 SAFE_TRANSFER_FUNCTION_SELECTOR = b'\x42\x84\x2e\x0e'
-ERC20_PORTAL_ADDRESS = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB" #if msg.sender == ERC20PortalAddress, então handle_erc20_deposit
+ERC20_PORTAL_ADDRESS = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB"
 ERC721_PORTAL_ADDRESS = "0x237F8DD094C0e47f4236f12b4Fa01d6Dae89fb87"
 DAPP_RELAY_ADDRESS = "0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE"
 DESIGN_NFT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+USDT_ADDRESS = ""
+
+CREATE_NFT_FUNCTION_SIGNATURE = hex(int.from_bytes(
+    w3.keccak(b"createNFT(address,string)")[:4], 'big'))
+
+ERC20_FUNCTION_SIGNATURE = hex(int.from_bytes(
+    w3.keccak(b"transfer(address,uint256)")[:4], 'big'))
+
 
 rollup_address = None
 
@@ -31,10 +47,6 @@ order_id = 0
 users = {}
 designs = {}
 orders = {}
-
-class MintArgs(BaseModel):
-    to: abi.Address
-    tokenURI: abi.String
 
 def str2hex(string):
     return binary2hex(str2binary(string))
@@ -57,6 +69,9 @@ def send_notice(notice: str) -> None:
 def send_report(report: str) -> None:
     send_post("report", report)
     
+def send_voucher(voucher: str) -> None:
+    send_post("voucher", voucher)
+
 def encode_image_to_base64(image_path):
     with open(image_path, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
@@ -80,38 +95,49 @@ def create_user(name, email):
     users[user_id] = user
     return user
 
-def create_design(prompt, contractAddress, userAddress: abi.Address, tokenURI: abi.String):
+def create_design(prompt, userAddress, tokenURI):
     global design_id
     design_id += 1
     design = {
         "id": design_id,
         "prompt": prompt,
-        "image": tokenURI
+        "image": tokenURI,
+        "owner": userAddress
         #"image": encode_image_to_base64(f"design_{design_id}.png")
     }
     designs[design_id] = design
-    args = MintArgs(to=userAddress, tokenURI=tokenURI)
 
-    voucher = create_voucher_from_model(
-        destination=contractAddress,
-        function_name='createNFT',
-        args_model=args,
-    )
-
-    return design, voucher
+    return design
 
 
-def create_order(user_id, design_id):
+def create_order(user_id, manufacturer, design_id):
     global order_id
     order_id += 1
     order = {
         "id": order_id,
         "user_id": user_id,
         "design_id": design_id,
+        "manufacturer": manufacturer,
         "status": "pending"
     }
     orders[order_id] = order
     return order
+
+def NFT_create_voucher(_to, _tokenURI) -> dict:
+    global CREATE_NFT_FUNCTION_SIGNATURE
+
+    data = encode(['address', 'string'], [_to, _tokenURI])
+    voucherPayload = CREATE_NFT_FUNCTION_SIGNATURE + data.hex()
+    voucher = {"destination": DESIGN_NFT_ADDRESS, "payload": voucherPayload}
+    return voucher
+
+def ERC20_create_voucher(_to, _amount) -> dict:
+    global CREATE_NFT_FUNCTION_SIGNATURE
+
+    data = encode(['address', 'uint256'], [_to, _amount])
+    voucherPayload = ERC20_FUNCTION_SIGNATURE + data.hex()
+    voucher = {"destination": USDT_ADDRESS, "payload": voucherPayload}
+    return voucher
 
 def transfer_design_to_other_user(user_id, design_id, other_user_id):
     design = designs[design_id]
@@ -153,14 +179,19 @@ def list_orders_by_design(design_id):
 def handle_erc20_deposit(binary): #Manage manufacturer payments
     token_address = binary[1:21]
     depositor = binary[21:41]
-    amount = int.from_bytes(binary[41:73], "big")
+    totalAmount = int.from_bytes(binary[41:73], "big")
+    manufacturerAmount = totalAmount * 9 // 10
+    designerAmount = totalAmount - manufacturerAmount
     erc20_deposit = {
         "depositor": binary2hex(depositor),
         "token_address": binary2hex(token_address),
-        "amount": amount,
+        "amount": totalAmount,
     }
+
+    # Pay Manufacturer (Voucher)
+    # Pay Designer (Voucher)
     logger.info({"payload": str2hex(f"Decode new erc20 deposit {erc20_deposit}")})
-    notice_str = f"Deposit received from: {depositor}; ERC-20: {token_address}; Amount: {amount}"
+    notice_str = f"Deposit received from: {depositor}; ERC-20: {token_address}; Amount: {totalAmount}; Manufacturer Amount: {manufacturerAmount}; Designer Amount: {designerAmount}"
     logger.info(f"Adding notice: {notice_str}")
     notice = {"payload": str2hex(notice_str)}
     send_notice(notice)
@@ -209,9 +240,11 @@ def handle_advance(data):
             send_report({"payload": str2hex(f'{report_payload}')})
             
         elif json_data["method"] == "create_design":
-            design = create_design(json_data["prompt"], json_data["contractAddress"], json_data["userAddress"], json_data["tokenURI"])
+            design = create_design(json_data["prompt"], json_data["userAddress"], json_data["tokenURI"])
+            NFT_voucher = NFT_create_voucher(json_data["userAddress"], json_data["tokenURI"])
             report_payload = {"design_id": design["id"]}
-            send_report({"payload": str2hex(f'{report_payload}')})
+            send_voucher(NFT_voucher)
+            send_report({"payload": str2hex("Chegou aqui")})
         
         elif json_data["method"] == "create_order":
             order = create_order(json_data["user_id"], json_data["design_id"])

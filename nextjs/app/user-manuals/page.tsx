@@ -5,63 +5,64 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 const faqData = [
   {
-    question: "What is the purpose of this application?",
+    question: "What is The Prism?",
     answer:
-      "This application is designed to help users manage their tasks efficiently by providing a platform to create, update, and track their activities.",
+      "The Prism is a platform that combines art and blockchain to enable users to create hyper-personalized AI-generated art, mint it as a unique NFT, and connect with producers to bring the art to life as custom t-shirts.",
   },
   {
-    question: "How do I create an account?",
+    question: "Who can use The Prism?",
     answer:
-      "Click on the 'Sign Up' button on the homepage, fill in your details, and follow the on-screen instructions to complete the registration process.",
+      "The Prism is designed for both artists who want to create and sell their AI-generated art as NFTs and common users who want to design their own t-shirts or use existing art from the marketplace.",
   },
   {
-    question: "How can I reset my password?",
+    question: "How does The Prism ensure the authenticity of the art?",
     answer:
-      "Click on the 'Forgot Password' link on the login page, enter your registered email address, and follow the instructions sent to your email to reset your password.",
+      "The authenticity of the art is guaranteed by recording the AI-generated art on the blockchain using Cartesi, ensuring that each piece is unique and verifiable.",
   },
   {
-    question: "How do I create a new task?",
+    question: "How can I create and list my art on the marketplace?",
     answer:
-      "Navigate to the 'Tasks' section, click on the 'Add Task' button, fill in the task details, and click 'Save.'",
+      "Artists can use The Prism's AI tools to create their art, mint it as an NFT, and list it on the marketplace to earn royalties from t-shirt sales.",
   },
   {
-    question: "How can I edit an existing task?",
+    question: "What are the benefits of listing my art on The Prism?",
     answer:
-      "Go to the 'Tasks' section, find the task you want to edit, click on the 'Edit' button next to it, make the necessary changes, and click 'Save.'",
+      "By listing your art on The Prism, you can earn royalties each time your design is used to produce a t-shirt. The platform also provides a transparent and secure way to showcase and sell your digital art.",
   },
   {
-    question: "How do I delete a task?",
+    question: "How do royalties work for artists?",
     answer:
-      "In the 'Tasks' section, locate the task you want to delete and click the 'Delete' button next to it. Confirm the deletion when prompted.",
+      "Artists receive royalties whenever a t-shirt with their design is sold. The royalties are distributed in stablecoins, ensuring a straightforward and reliable payment process.",
   },
   {
-    question: "What browsers are supported by this application?",
+    question: "Can I use my own designs to create a t-shirt?",
     answer:
-      "Our application supports the latest versions of major browsers, including Google Chrome, Mozilla Firefox, Safari, and Microsoft Edge.",
+      "Yes, common users can create their own designs using The Prism's tools and have them printed on t-shirts, or they can choose from existing designs listed by artists on the marketplace.",
   },
   {
-    question: "Is my data secure?",
+    question: "How do I purchase a t-shirt with a design from the marketplace?",
     answer:
-      "Yes, we use industry-standard encryption and security practices to ensure that your data is safe and secure.",
+      "Browse the marketplace, select the design you like, and follow the instructions to place an order. The t-shirt will be produced by a trusted producer and delivered to your address.",
   },
   {
-    question: "How do I report a bug or provide feedback?",
+    question: "How are payments handled for t-shirt orders?",
     answer:
-      "You can report bugs or provide feedback by navigating to the 'Support' section and clicking on 'Contact Us.' Fill out the form with your issue or feedback, and our support team will get back to you.",
+      "Payments for t-shirt orders are made in stablecoins, covering the cost of production and delivery. This ensures a seamless and secure transaction process.",
   },
   {
-    question: "How can I update my profile information?",
-    answer: "Go to the 'Profile' section, click on 'Edit Profile,' make the necessary changes, and click 'Save.'",
+    question: "What technology stack does The Prism use?",
+    answer:
+      "The Prism uses React for the frontend, Julia and Python for backend operations, and MongoDB for data storage. The platform also leverages Cartesi Rollups for blockchain interactions.",
   },
   {
-    question: "Can I delete my account?",
+    question: "How does The Prism ensure the security of transactions?",
     answer:
-      "Yes, if you wish to delete your account, please navigate to the 'Settings' section, and under 'Account Management,' click on 'Delete Account.' Follow the instructions to permanently delete your account.",
+      "The Prism employs robust security measures, including smart contract security audits and blockchain integration with Cartesi Rollups, to ensure that all transactions are secure and verifiable.",
   },
   {
-    question: "How do I change my email address?",
+    question: "How can I get support if I encounter issues?",
     answer:
-      "In the 'Profile' section, click on 'Edit Profile,' update your email address, and click 'Save.' A confirmation email will be sent to your new email address.",
+      "For support, you can visit the 'Support' section on The Prism's website, where you can find contact information and resources to help resolve any issues you may encounter.",
   },
 ];
 
@@ -92,6 +93,52 @@ const FAQ = () => {
             {openIndex === index && <div className="p-4 white-glassmorphism">{faq.answer}</div>}
           </div>
         ))}
+      </div>
+      <h1 className="text-3xl sm:text-4xl text-gradient pt-10 pb-4">Quick Start Guide</h1>
+      <div className="flex flex-row items-start pt-0">
+        <div className="w-1/2 mb-4">
+          <h2 className="text-2xl text-gradient mb-2">For Artists</h2>
+          <ol className="list-decimal list-inside">
+            <li className="mb-2">
+              <strong>Sign Up:</strong> Create an account using a Web3 wallet (like MetaMask) or a social wallet (like
+              Google).
+            </li>
+            <li className="mb-2">
+              <strong>Create Art:</strong> Use the AI Art Generator to create your unique designs.
+            </li>
+            <li className="mb-2">
+              <strong>Mint NFT:</strong> Mint your design as an NFT to ensure its authenticity.
+            </li>
+            <li className="mb-2">
+              <strong>List on Marketplace:</strong> List your NFT on the marketplace to earn royalties.
+            </li>
+          </ol>
+        </div>
+        <div className="w-1/2 mb-4">
+          <h2 className="text-2xl text-gradient mb-2">For Users</h2>
+          <ol className="list-decimal list-inside">
+            <li className="mb-2">
+              <strong>Sign Up:</strong> Create an account using a Web3 wallet (like MetaMask) or a social wallet (like
+              Google).
+            </li>
+            <li className="mb-2">
+              <strong>Choose or Create Design:</strong> Browse the marketplace to select a design or use the AI Art
+              Generator to create your own.
+            </li>
+            <li className="mb-2">
+              <strong>Order T-Shirt:</strong> Place an order to have the design printed on a t-shirt. Ensure your
+              delivery address is correctly filled out.
+            </li>
+            <li className="mb-2">
+              <strong>Receive Product:</strong> Your t-shirt will be produced and delivered to your address.
+            </li>
+            <li className="mb-2">
+              <strong>IMPORTANT:</strong> In the current version of The Prism, our management of t-shirts delivery is
+              restricted to certain locations. We will keep in touch with you as soon as you order the t-shirts and
+              refund you if not elegible to receive your product.
+            </li>
+          </ol>
+        </div>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ConnectButton } from "@particle-network/connect-react-ui";
 import "@particle-network/connect-react-ui/dist/index.css";
-import { Bars3Icon, ScaleIcon, TruckIcon, UserIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BookOpenIcon, ScaleIcon, TruckIcon, UserIcon } from "@heroicons/react/24/outline";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
 type HeaderMenuLink = {
@@ -34,6 +34,11 @@ export const menuLinks: HeaderMenuLink[] = [
     label: "Profile",
     href: "/profile",
     icon: <UserIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Manuals",
+    href: "/user-manuals",
+    icon: <BookOpenIcon className="h-4 w-4" />,
   },
 ];
 

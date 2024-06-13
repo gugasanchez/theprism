@@ -9,6 +9,11 @@ import web3
 from eth_abi.abi import encode
 from pydantic import BaseModel
 
+import cartesi_wallet.wallet as Wallet
+
+wallet = Wallet
+rollup_address = ""
+
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
@@ -83,11 +88,12 @@ def send_post(endpoint, json_data) -> None:
         f"/{endpoint}: Received response status {response.status_code} body {response.content}")
     
     
-def create_user(name, email):
+def create_user(name, userAddress, email):
     global user_id
     user_id += 1
     user = {
         "id": user_id,
+        "address": userAddress,
         "name": name,
         "email": email,
         "status": "active"
@@ -110,18 +116,52 @@ def create_design(prompt, userAddress, tokenURI):
     return design
 
 
-def create_order(user_id, manufacturer, design_id):
+def create_order(user_id, design_id, manufacturerAddress):
     global order_id
     order_id += 1
     order = {
         "id": order_id,
         "user_id": user_id,
         "design_id": design_id,
-        "manufacturer": manufacturer,
+        "manufacturerAddress": manufacturerAddress,
         "status": "pending"
     }
     orders[order_id] = order
     return order
+
+def get_last_order_details_by_wallet_address(wallet_address):
+    try:
+        user_id = None
+        for user in users.values():
+            if user['address'].lower() == wallet_address.lower():
+                user_id = user['id']
+                break
+        
+        if user_id is None:
+            raise ValueError("User not found for the given wallet address")
+        
+        user_orders = [order for order in orders.values() if order['user_id'] == user_id]
+        
+        if not user_orders:
+            raise ValueError("No orders found for the given user_id")
+        
+        last_order = user_orders[-1]
+        
+        design_id = last_order["design_id"]
+        if design_id not in designs:
+            raise ValueError("Design not found for the given design_id")
+        
+        design = designs[design_id]
+        designOwner = design["owner"]
+        
+        return {
+            "manufacturerAddress": last_order["manufacturerAddress"],
+            "designOwner": designOwner
+        }
+    
+    except Exception as e:
+        logger.error(f"Error retrieving last order details for wallet address {wallet_address}: {e}")
+        return None
 
 def NFT_create_voucher(_to, _tokenURI) -> dict:
     global CREATE_NFT_FUNCTION_SIGNATURE
@@ -130,14 +170,13 @@ def NFT_create_voucher(_to, _tokenURI) -> dict:
     voucherPayload = CREATE_NFT_FUNCTION_SIGNATURE + data.hex()
     voucher = {"destination": DESIGN_NFT_ADDRESS, "payload": voucherPayload}
     return voucher
-
-def ERC20_create_voucher(_to, _amount) -> dict:
-    global CREATE_NFT_FUNCTION_SIGNATURE
-
-    data = encode(['address', 'uint256'], [_to, _amount])
-    voucherPayload = ERC20_FUNCTION_SIGNATURE + data.hex()
-    voucher = {"destination": USDT_ADDRESS, "payload": voucherPayload}
-    return voucher
+ 
+# def ERC20_create_voucher(_to, _amount) -> dict:
+#     global ERC20_FUNCTION_SIGNATURE
+#     data = encode(['address', 'uint256'], [_to, _amount])
+#     voucherPayload = ERC20_FUNCTION_SIGNATURE + data.hex()
+#     voucher = {"destination": USDT_ADDRESS, "payload": voucherPayload}
+#     return voucher
 
 def transfer_design_to_other_user(user_id, design_id, other_user_id):
     design = designs[design_id]
@@ -176,22 +215,30 @@ def list_orders_by_user(user_id):
 def list_orders_by_design(design_id):
     return [order for order in orders.values() if order["design_id"] == design_id]
 
-def handle_erc20_deposit(binary): #Manage manufacturer payments
+def handle_erc20_deposit(binary):
     token_address = binary[1:21]
-    depositor = binary[21:41]
+    depositor_binary = binary[21:41]
     totalAmount = int.from_bytes(binary[41:73], "big")
     manufacturerAmount = totalAmount * 9 // 10
     designerAmount = totalAmount - manufacturerAmount
-    erc20_deposit = {
-        "depositor": binary2hex(depositor),
-        "token_address": binary2hex(token_address),
-        "amount": totalAmount,
-    }
+    depositor_address = binary2hex(depositor_binary)
 
-    # Pay Manufacturer (Voucher)
-    # Pay Designer (Voucher)
-    logger.info({"payload": str2hex(f"Decode new erc20 deposit {erc20_deposit}")})
-    notice_str = f"Deposit received from: {depositor}; ERC-20: {token_address}; Amount: {totalAmount}; Manufacturer Amount: {manufacturerAmount}; Designer Amount: {designerAmount}"
+    result = get_last_order_details_by_wallet_address(depositor_address)
+
+    if result:
+        manufacturer_address, designOwner = result['manufacturerAddress'], result['designOwner']
+
+        manufacturer_notice = wallet._erc20_deposit(manufacturer_address, binary2hex(token_address), manufacturerAmount)
+        manufacturer_response = requests.post(rollup_server + "/notice", json={"payload": manufacturer_notice.payload})
+        
+        designer_notice = wallet._erc20_deposit(designOwner, binary2hex(token_address), designerAmount)
+        designer_response = requests.post(rollup_server + "/notice", json={"payload": designer_notice.payload})
+        print(f"Manufacturer Address: {manufacturer_address}")
+        print(f"Design Owner: {designOwner}")
+    else:
+        print("No order details found for the given wallet a    ddress")
+
+    notice_str = f"Deposit received from: {depositor_address}; ERC-20: {token_address}; Amount: {totalAmount}; Manufacturer address: {manufacturer_address}; Designer address: {designOwner}"
     logger.info(f"Adding notice: {notice_str}")
     notice = {"payload": str2hex(notice_str)}
     send_notice(notice)
@@ -227,7 +274,15 @@ def handle_advance(data):
         
         elif msg_sender.lower() == ERC20_PORTAL_ADDRESS.lower():
             handle_erc20_deposit(hex2binary(data['payload']))
+
+        # elif json_data["method"] == "erc20_test":
+        #     handle_erc20_deposit(hex2binary(json_data['payload']))
         
+        elif json_data["method"] == "erc20_withdraw":
+            converted_value = int(json_data["amount"]) if isinstance(json_data["amount"], str) and json_data["amount"].isdigit() else json_data["amount"]
+            voucher = wallet.erc20_withdraw(json_data["from"].lower(), json_data["erc20"].lower(), converted_value)
+            response = requests.post(rollup_server + "/voucher", json={"payload": voucher.payload, "destination": voucher.destination})
+
         elif json_data["method"] == "transfer_erc721":
             erc721_safetransfer_voucher(json_data["token_address"], json_data["receiver"], json_data["id"])
         
@@ -247,7 +302,7 @@ def handle_advance(data):
             send_report({"payload": str2hex("Chegou aqui")})
         
         elif json_data["method"] == "create_order":
-            order = create_order(json_data["user_id"], json_data["design_id"])
+            order = create_order(json_data["user_id"], json_data["design_id"], json_data["manufacturerAddress"])
             report_payload = {"order_id": order["id"]}
             send_report({"payload": str2hex(f'{report_payload}')})
         

@@ -1,104 +1,120 @@
 ![The Prism Banner](https://github.com/gugasanchez/theprism/assets/62973287/ac16ce4e-cced-4a22-8570-f42ae4346cba)
 
-# Welcome to The Prism 
+# [The Prism](https://the-prism-eth-samba.vercel.app/) ▲
 
 Unleash your creativity with The Prism, a cutting-edge platform where art meets blockchain to make your designs wearable. Dive into a world where AI-generated images become tangible and every creation is a unique fashion statement.
 
-## 🛠️ Features
+## ✨ Features Overview
 
-- **AI-Powered Design**: Turn your inspirations into digital art, authenticated and minted on-chain using Cartesi Rollups.
-- **Seamless Transition to Tangibles**: Easily convert your digital art into custom-made t-shirts through our network of quality producers.
-- **Web3 Wallet Integration**: Simple login using Metamask and Web3 wallet of your preference.
-- **Ownership and Royalties**: Mint your art as NFTs and get rewarded for your creativity through a transparent royalty system.
+- **🎨 Creative Design Production**: Harness the power of self-trained models based on open-source stable-diffusion ML running in a RISC-V architecture inside the Cartesi Machine to turn your inspirations into unique digital masterpieces, blockchain-ready.
+
+- **🔐 Proof of Inspiration and Unique Art**: Utilize the Cartesi Machine to generate verifiably unique art. The process ensures that each artwork is authentic and proves the Cartesi "superpower" given to dApps.
+
+- **🔗 Blockchain-Powered Logic**: All blockchain operations, including minting NFTs, receiving royalties, and making transactions, are powered by Cartesi technology, ensuring transparency and security.
+
+- **💸 Royalties and Transactions**: Artists earn royalties automatically with every sale. The earnings and transactions are securely handled by Cartesi rollups on the blockchain.
+
+- **🛍️ Marketplace for Exclusive Designs**: A dedicated space for designers to showcase and sell their one-of-a-kind pieces to customers seeking truly unique, blockchain-authenticated art and design.
+
+- **🔗 Particle Connect Service**: Enables users to use not only Web 3.0 wallets (like Metamask) but also Social Wallets (like Google), through Particle technology, facilitating mass adoption of our dApp by simplifying the login and wallet management process.
 
 ## 🏗️ System Architecture
-<p float="left">
-  <img src="https://github.com/gugasanchez/theprism/assets/62973287/659ae2a4-095c-42d1-bbac-f07d4656c6dc" width="150" />
-  <img src="https://github.com/gugasanchez/theprism/assets/62973287/6617f73f-f89b-4ef4-bc57-37dcb0234939" width="150" /> 
-  <img src="https://github.com/gugasanchez/theprism/assets/62973287/bf7928ea-cd22-4f87-b5b5-7f16874fae40" width="150" />
+
+<div align="center">
+  <img src="https://github.com/ryanviana/the-prism_eth-samba/assets/70733914/e4555502-4d6e-4235-a39a-298bd192b9ca" width="300" style="margin: 20px;" alt="Workflow Process"/> 
+  <img src="https://github.com/ryanviana/the-prism_eth-samba/assets/70733914/bfc72bd9-7d41-48b3-bbd8-7b8bf6afc1b9" width="300" style="margin: 20px;" alt="NFT Architecture"/>
+</div>
+
+<p align="center">
+  <i>Explore the foundational structure and detailed components that drive our platform, alongside the workflow process that ensures seamless operation.</i>
 </p>
 
-## 📌 Run The Prism Locally
+## 🤖 Stable Diffusion Implementation on Cartesi Machine
 
-### Prerequisites
-- Node.js installed (preferably the latest stable version)
-- Git installed on your machine
+### Stable Diffusion for Art Generation
 
-### Installation
-```
-git clone https://github.com/gugasanchez/theprism.git
-cd theprism
-```
+Harnessing the power of Stable Diffusion, our platform generates unique digital masterpieces based on user prompts. Here's how the process unfolds:
 
-### Setting up the Frontend
-```
-cd client
-npm install
-npm run codegen
-npm run dev
-```
-The frontend should now be running on `http://localhost:5173` (or another port specified in the console output).
+- **📝 Prompt Submission**: Users input their design idea into our system using the Art Generation Prompt. This user-friendly interface allows for the seamless creation of personalized designs.
 
-### Setting up the Backend
+- **🔍 Why Stable Diffusion**: We chose Stable Diffusion due to its robust capabilities in generating high-quality, detailed images. It excels in creating art that meets the aesthetic and technical requirements of digital and physical merchandise.
 
-```
-cd the_prism_dapp
-sunodo build
-sunodo run
-```
+- **💻 C++ Implementation**: The Stable Diffusion model runs as a C++ program within our platform. This choice ensures optimal performance and integration with our backend systems, leveraging the efficiency and speed of C++ for image generation tasks.
 
-#### ⚠ 1. Remember to deploy an ERC-20 Contract locally if you want to sign a Metamask transaction to buy a t-shirt ("Confirm order" button).
+- **🔗 Interacting with the Cartesi Machine**: The core of our platform's computing power is the Cartesi Machine. By running the Stable Diffusion model within a RISC-V architecture, the Cartesi Machine ensures that each generated piece of art is verifiably unique and secure. This interaction demonstrates the "superpower" of Cartesi, enhancing the capabilities of decentralized applications.
 
-#### ⚠ 2. The code within the_prism_diffusion directory is intended for research and development purposes, aimed at continuing the effort to execute Stable Diffusion on Cartesi. We have made significant progress in running it with Docker, but we are currently encountering a cache issue when downloading the Stable Diffusion 1.5 model.
+- **🛠️ Technologies Utilized**: Our implementation relies on a suite of cutting-edge technologies to maintain performance and scalability:
+  - **Docker**: Containerization with Docker ensures that our applications run smoothly across different environments. It provides consistency and reliability in the deployment of the Stable Diffusion model.
+  - **RISC-V Architecture**: By leveraging the RISC-V architecture within the Cartesi Machine, we ensure that our computations are efficient and secure, taking full advantage of open-source hardware innovations.
+  - **Blockchain Integration**: All operations related to art generation, minting NFTs, and handling transactions are securely managed on the blockchain, powered by Cartesi technology. This integration guarantees transparency and trust throughout the creative process.
 
-#### Therefore, please do not attempt to run this directory; it is meant to be finalized in the continuation of the development process. 
+### Tailored Design Generation
 
-## 🤖 Stable Diffusion <> The Prism
+- **👕 T-Shirt Design Focus**: Our models will undergo specific training to optimize the generation of t-shirt designs that are not only aesthetically pleasing but also suitable for manufacturing, based on user inputs.
+- **⚙️ Manufacturing Parameters Integration**: In addition to design aesthetics, the model will consider optimal manufacturing parameters to ensure that designs are ready for production, enhancing the bridge between digital creativity and physical merchandise.
 
-### How It Works Now
-Currently, our system operates by taking a user's design prompt through our frontend interface. The core of our process involves the Stable Diffusion model, which utilizes a pre-prepared t-shirt image as a base. With the right parameters set for the Stable Diffusion model, it generates a new t-shirt overlaying the base image with a print that visualizes the user's design idea. This innovative approach allows for quick and customized design generation directly influenced by user input.
+## 🛠️ Services Stack
 
-#### Steps:
-1. User enters a design prompt on the frontend.
-2. The Stable Diffusion model uses a base t-shirt image and parameters to generate a design.
-3. A t-shirt image featuring the prompt's design idea is created and displayed to the user.
+Our platform leverages a cutting-edge stack of technologies and services designed to enhance user experience, ensure security, and foster innovation. Here's a look at the key services in our stack and how we use them:
 
-### Future Vision
+- **🖱 Particle Connect**: Simplifies the user experience by offering social login capabilities. This service allows users to benefit from blockchain technology without needing in-depth knowledge of how wallets or blockchain work.
+   - [🔎 Explore the Code](./packages/nextjs/components/ThePrismAppWithProviders.tsx)
 
-#### Creating a Unique Design
-1. **Idea Generation:** Users will prompt a design idea through our enhanced interface.
-2. **Design Creation:** A model trained with knowledge about manufacturer parameters will generate an image suitable for production.
-3. **Originality Check:** We will compare the generated design against similar prompts and images. If it surpasses a certain originality threshold, it will be merged with pre-established t-shirt models for user review.
-4. **NFT Creation:** Original designs will qualify for NFT creation, allowing users to claim ownership and sell their designs in a marketplace. Users will also have the option to specify the quantity of NFTs produced.
+- **👩‍💻 Scaffold Eth 2**: A comprehensive toolkit for Ethereum developers, Scaffold-ETH 2 helps us rapidly deploy Solidity smart contracts and launch a DApp with a React frontend. It includes Hardhat for smart contract development and Next.js for building user-friendly interfaces, streamlining our development process.
 
-#### Just Buying a High Personalized T-Shirt
-- This process mirrors the unique design creation but omits the similarity check. Users can directly purchase the personalized t-shirt without the design being linked to an NFT.
+- **🌄 Stable Diffusion**: Utilizes C++, Docker, and RISC-V architecture within the Cartesi Machine to power our image generation model. This combination ensures high performance and verifiability of unique art creations from user prompts.
+   - [🔎 Explore the Code](./packages/backend/design_diffusion/src/design/design.service.ts)
 
-#### Enhanced User Experience
-- For both processes, we plan to implement a frontend console similar to Fooocus, providing users with extensive configuration options beyond simple prompt entry. This will enable the production of highly detailed and personalized designs.
+- **🔗 Cartesi dApp**: The core of our decentralized application is built on Cartesi technology, using Python for smart contract interactions and the Python Wallet for managing transactions. This setup provides a robust and secure environment for all blockchain operations.
+   - [🔎 Explore the Code](./packages/hardhat/contracts/DesignFunctions.sol)
+
+- **💻 Cartesi Frontend Integration**: Seamlessly integrates the Cartesi technology with our frontend, ensuring a smooth user experience. This integration handles everything from user interactions to backend processes, leveraging the full power of Cartesi’s capabilities.
+   - [🔎 Explore the Code](./packages/nextjs/components/ThePrismAppWithProviders.tsx)
+ 
+
+## 📒 Contracts
+
+### NFT Factory Contract
+
+- **Address:** [0x869181609CD5A911aE43d695A03A38bba5F74A01](https://sepolia.scrollscan.com/address/0x869181609CD5A911aE43d695A03A38bba5F74A01)
+- **Purpose:** NFT Factory contract used to deploy an ERC721 Contract for each user and manage these contracts. Here we can take a look in all NFT contracts deployed and all purchases made in each of them.
+
+### CustomTShirtNFT 
+
+- **Address** (example deployed to an user): [0xb3f28ad65855aa0cd7949adb477e13085348f625](https://sepolia.scrollscan.com/address/0xb3f28ad65855aa0cd7949adb477e13085348f625)
+- **Purpose:** Each user will have him own CustomTShirtNFT contract. When you create a new T-shirt design and save it, a new NFT will be minted to your address. The NFT Factory is used to call functions in these contracts.
+
+### USDT Contract
+
+- **Address:** [0x9c4BD6453BdbA9E58F4A881A2C6BB0683EdcA0B9](https://sepolia.scrollscan.com/address/0x9c4BD6453BdbA9E58F4A881A2C6BB0683EdcA0B9)
+- **Purpose:** Simulate an stablecoin to make payments when an user buy a T-Shirt.
+
+## 📚 Resources
+
+- **[The Prism](https://the-prism-eth-samba.vercel.app/)**: Discover the full capabilities of The Prism Platform, explore our features, and learn how we're changing the game in digital-to-physical art conversion.
+
+- **[Our Pitch Deck](https://www.canva.com/design/DAGASoj2moo/k05LvPOLeTAI26mbPsUXWQ/edit?utm_content=DAGASoj2moo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)**: Dive deeper into our business model, technology, and the market opportunity with our comprehensive pitch deck. Understand our vision, strategy, and how we plan to grow.
+
+- **[Our Demo](https://www.youtube.com/watch?v=c19WSWHkE6w)**: Experience The Prism Platform in action. Our demo provides a hands-on look at how users can create, mint, and translate digital art into physical products seamlessly.
+
+- **[Our Backend](https://the-prism-backend.vercel.app/designs)**: The Prism Backend stores and manages base64 encoded images, designed for easy frontend integration.
 
 ### Conclusion
 Our project is at the forefront of combining machine learning with fashion design, creating a unique platform for personalized apparel. As we continue to develop and refine our technology, we aim to offer users an unparalleled ability to bring their creative visions to life, whether through owning a unique piece of wearable art or by stepping into the role of a designer in the digital marketplace.
+Our team would like to thank Cartesi for providing the opportunity of taking part of the SeedGrants program. We hope this is the beggining of a very succesful partnership.
 
-## Pitch Slides
-- [The Prism | Pitch | Cartesi Hackathon.pdf](https://github.com/gugasanchez/theprism/files/14706864/The.Prism.Pitch.Cartesi.Hackathon.pdf)
-
-
-## 📁 Resources
+## 📁 Researches & Data
 
 - [Forbes | The Hyper-Personalization trend](https://www.forbes.com/sites/eladnatanson/2023/06/01/hyper-personalization-is-already-here---its-future-is-even-more-cutting-edge/?sh=414917c55cc2)
 - [Forbes | E-commerce 3.0](https://www.forbes.com/sites/onmarketing/2023/08/23/e-commerce-30-the-future-of-retail-is-hyper-personalized/?sh=43c9ce693d30)
+- [The Guardian | AI & Fashion Billionaire Market](https://www.theguardian.com/fashion/2024/feb/08/ai-london-fashion-week)
 
 ## 👥 Team Prism
-
 - [@ryanviana](https://www.github.com/ryanviana)
 - [@pjvperes](https://www.github.com/pjvperes)
 - [@gugasanchez](https://www.github.com/gugasanchez)
 
 ---
-
-🐦 [**Follow us on X**](https://twitter.com/theprism_ctsi)
-
 
 © 2024 The Prism. A new spectrum of digital art and fashion.
 

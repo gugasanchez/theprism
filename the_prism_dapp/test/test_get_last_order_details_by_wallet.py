@@ -13,9 +13,9 @@ def setup_data():
     design1 = create_design(prompt="Sunset over the mountains", userAddress=user1["address"], tokenURI="http://example.com/design1")
     design2 = create_design(prompt="Ocean view", userAddress=user2["address"], tokenURI="http://example.com/design2")
 
-    order1 = create_order(user_id=user1["id"], manufacturerAddress="0xmanufacturer1", design_id=design1["id"])
-    order2 = create_order(user_id=user1["id"], manufacturerAddress="0xmanufacturer2", design_id=design2["id"])
-    order3 = create_order(user_id=user2["id"], manufacturerAddress="0xmanufacturer3", design_id=design2["id"])
+    order1 = create_order(user_id=1, manufacturerAddress="0xmanufacturer1", design_id=design1["id"])
+    order2 = create_order(user_id=1, manufacturerAddress="0xmanufacturer2", design_id=design2["id"])
+    order3 = create_order(user_id=2, manufacturerAddress="0xmanufacturer3", design_id=design2["id"])
 
 def test_get_last_order_details_by_wallet_address(setup_data):
     wallet_address = "0x1234567890abcdef1234567890abcdef12345678"

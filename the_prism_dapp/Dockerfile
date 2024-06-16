@@ -13,17 +13,29 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
   busybox-static=1:1.30.1-7ubuntu3 \
   build-essential \
+  curl \
   && rm -rf /var/lib/apt/lists/* /var/log/* /var/cache/*
+
+# Install Rust
+# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+# ENV PATH="/root/.cargo/bin:${PATH}"
+
+# # Install maturin (Rust dependency)
+# RUN cargo install maturin
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Install Python dependencies, excluding ckzg
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt --no-cache \
+  && find /usr/local/lib/python3.10/site-packages -type d -name '__pycache__' -exec rm -r {} +
 
 RUN useradd --create-home --user-group dapp
 
 ENV PATH="/opt/cartesi/bin:${PATH}"
 
 WORKDIR /opt/cartesi/dapp
-COPY ./requirements.txt .
-
-RUN pip install -r requirements.txt --no-cache \
-  && find /usr/local/lib/python3.10/site-packages -type d -name '__pycache__' -exec rm -r {} +
 
 COPY ./dapp.py .
 

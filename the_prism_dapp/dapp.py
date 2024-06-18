@@ -5,10 +5,9 @@ import requests
 import json
 import traceback
 import base64
-import web3
 from eth_abi.abi import encode
-from pydantic import BaseModel
 from urllib.parse import urlparse
+from Crypto.Hash import keccak
 
 import cartesi_wallet.wallet as Wallet
 
@@ -27,7 +26,6 @@ logger.info(f"HTTP rollup_server url is {rollup_server}")
 # LOGGER = logging.getLogger(__name__)
 # logging.basicConfig(level=logging.DEBUG)
 # dapp = DApp()
-w3 = web3.Web3()
 
 TRANSFER_FUNCTION_SELECTOR = b'\xa9\x05\x9c\xbb'
 SAFE_TRANSFER_FUNCTION_SELECTOR = b'\x42\x84\x2e\x0e'
@@ -37,11 +35,13 @@ DAPP_RELAY_ADDRESS = "0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE"
 DESIGN_NFT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 USDT_ADDRESS = ""
 
-CREATE_NFT_FUNCTION_SIGNATURE = hex(int.from_bytes(
-    w3.keccak(b"createNFT(address,string)")[:4], 'big'))
+def keccak_256_hex_pycryptodome(data):
+    k = keccak.new(digest_bits=256)
+    k.update(data)
+    return hex(int.from_bytes(k.digest()[:4], 'big'))
 
-ERC20_FUNCTION_SIGNATURE = hex(int.from_bytes(
-    w3.keccak(b"transfer(address,uint256)")[:4], 'big'))
+KECCAK_CREATE_NFT_FUNCTION_SIGNATURE = keccak_256_hex_pycryptodome(b"createNFT(address,string)")
+KECCAK_ERC20_FUNCTION_SIGNATURE = keccak_256_hex_pycryptodome(b"transfer(address,uint256)")
 
 user_id = 0
 design_id = 0

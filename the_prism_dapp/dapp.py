@@ -46,7 +46,7 @@ def hex2str(hexstr):
     return hex2binary(hexstr).decode("utf-8")
 
 def send_notice(notice: str) -> None:
-    send_post("notice", notice)
+    send_post("notice", notice) fcreate
 
 def send_report(report: str) -> None:
     send_post("report", report)

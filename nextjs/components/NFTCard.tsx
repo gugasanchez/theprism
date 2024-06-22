@@ -93,29 +93,34 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
 
   const toggleModal = () => setShowModal(!showModal);
 
-  const handleEstimatePrice = async() => {
-
-    /* create_order function*/
+  const handleEstimatePrice = async (selectedDesignId: number) => {
+    const createOrderPayload = {
+      method: "create_order",
+      design_id: selectedDesignId,
+      manufacturerAddress: "0x0Df1286de37637c966d55952388360fA2971aDa1"
+    };
+  
+    const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createOrderPayload)));
     const appContractAddress = "";
-    const payloadBytes = "";
-
+  
     const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
+    const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
+  
     const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
     const signer = customProvider.getSigner();
-
-    const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
-
+  
     const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
-
+  
     const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
-
+  
     await transaction.wait();
-
+  
     const estimated = "40 USDT";
     setEstimatedPrice(estimated);
-    setShowApproveTransaction(true); // Hide approve button
+    setShowApproveTransaction(true);
     setShowConfirmOrder(false);
   };
+  
 
   const handleApproveTransaction = async () => {
     const usdtAddress = "";
@@ -274,7 +279,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
               onChange={handleChange}
             />
             {!showApproveTransaction && !showConfirmOrder && (
-              <button className={style.confirmOrderButton} onClick={handleEstimatePrice}>
+              <button className={style.confirmOrderButton} onClick={() => handleEstimatePrice(1)}>
                 Estimate Price
               </button>
             )}

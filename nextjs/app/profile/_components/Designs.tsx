@@ -43,8 +43,13 @@ const Designs = () => {
   const withdrawRoyalties = async () => {
     console.log("Withdrawing royalties...");
 
+    const createWithdrawPayload = {
+      method: "erc20_withdraw",
+    };
+  
+    const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createWithdrawPayload)));
+
     const appContractAddress = "";
-    const payloadBytes = "";
     const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
 
     const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import NFTFactoryJSON from "../../utils/NFTFactory.json";
+import Image from "next/image";
+import SepoliaJSON from "../../utils/sepolia.json";
 import designApi, { Design } from "../../utils/designApi";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
@@ -24,15 +25,34 @@ const ArtGenerator: React.FC = () => {
     setShowResult(true); // Immediately show result area
     try {
       // Create a new design with the provided prompt
-      await designApi.createDesign(prompt);
+      // await designApi.createDesign(prompt);
       // After creating, fetch the latest design to update the UI
-      const designs = await designApi.getDesigns();
-      const newLatestDesign = designs[designs.length - 1];
-      setLatestDesign(newLatestDesign);
+      // const designs = await designApi.getDesigns();
+      // const newLatestDesign = designs[designs.length - 1];
+      // setLatestDesign(newLatestDesign);
+
+      const appContractAddress = "0x0Df1286de37637c966d55952388360fA2971aDa1";
+      const payload = "0x7b226d6574686f64223a20226164645f75736572222c20226e616d65223a2022506564726f222c2022656d61696c223a2022746573746540676d61696c2e636f6d227d"; 
+      const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(payload));
+  
+      const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
+      const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
+      const signer = customProvider.getSigner();
+  
+      const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
+  
+      const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
+  
+      const transaction = await InputBoxContract.addInput(appContractAddress, payload);
+  
+      await transaction.wait();
+
     } catch (error) {
       console.error("Failed to create or fetch designs", error);
     }
     setLoading(false); // End loading
+
+    
   };
 
   // Helper function to convert image data to base64 string
@@ -64,17 +84,20 @@ const ArtGenerator: React.FC = () => {
   const handleGenerateNFT = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
+    const appContractAddress = "";
+    const payloadBytes = "";
+
     const imageUrl =
       "https://img.freepik.com/fotos-premium/uma-camisa-branca-com-fundo-preto-e-as-costas_653449-538.jpg";
-    const NFTFactoryAddress = "0x869181609CD5A911aE43d695A03A38bba5F74A01";
+    const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
     const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
     const signer = customProvider.getSigner();
 
-    const NFTFactoryABI = NFTFactoryJSON.abi;
+    const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
 
-    const NFTFactoryContract = new ethers.Contract(NFTFactoryAddress, NFTFactoryABI, signer);
+    const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
 
-    const transaction = await NFTFactoryContract.mintTo(imageUrl);
+    const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
 
     await transaction.wait();
 

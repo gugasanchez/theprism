@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import NFTCard from "../../../components/NFTCard";
-import NFTFactoryJSON from "../../../utils/NFTFactory.json";
+import SepoliaJSON from "../../../utils/sepolia.json";
 import designApi, { Design } from "../../../utils/designApi";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
@@ -43,18 +43,25 @@ const Designs = () => {
   const withdrawRoyalties = async () => {
     console.log("Withdrawing royalties...");
 
+    const createWithdrawPayload = {
+      method: "erc20_withdraw",
+    };
+  
+    const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createWithdrawPayload)));
+
+    const appContractAddress = "";
+    const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
+
     const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
     const signer = customProvider.getSigner();
 
-    const NFTFactoryAddress = "0x869181609CD5A911aE43d695A03A38bba5F74A01";
+    const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
 
-    const NFTFactoryAbi = NFTFactoryJSON.abi;
+    const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
 
-    const NFTFactoryContract = new ethers.Contract(NFTFactoryAddress, NFTFactoryAbi, signer);
+    const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
 
-    const tx_2 = await NFTFactoryContract.withdrawUSDT();
-
-    await tx_2.wait();
+    await transaction.wait();
 
     setBalance(0);
   };

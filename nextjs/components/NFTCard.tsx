@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import NFTFactoryJSON from "../utils/NFTFactory.json";
+import SepoliaJSON from "../utils/sepolia.json";
 import USDTJson from "../utils/USDT.json";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
@@ -93,16 +93,38 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
 
   const toggleModal = () => setShowModal(!showModal);
 
-  const handleEstimatePrice = () => {
+  const handleEstimatePrice = async (selectedDesignId: number) => {
+    const createOrderPayload = {
+      method: "create_order",
+      design_id: selectedDesignId,
+      manufacturerAddress: "0x0Df1286de37637c966d55952388360fA2971aDa1"
+    };
+  
+    const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createOrderPayload)));
+    const appContractAddress = "";
+  
+    const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
+    const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
+  
+    const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
+    const signer = customProvider.getSigner();
+  
+    const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
+  
+    const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
+  
+    await transaction.wait();
+  
     const estimated = "40 USDT";
     setEstimatedPrice(estimated);
-    setShowApproveTransaction(true); // Hide approve button
+    setShowApproveTransaction(true);
     setShowConfirmOrder(false);
   };
+  
 
   const handleApproveTransaction = async () => {
-    const usdtAddress = "0x9c4BD6453BdbA9E58F4A881A2C6BB0683EdcA0B9";
-    const CustomTShirtNFTAddress = "0xb3f28ad65855aa0cd7949adb477e13085348f625";
+    const usdtAddress = "";
+    const ERC20PortalContractAddress = "";
     const price = 40;
 
     const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
@@ -114,7 +136,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
 
     const USDTContract = new ethers.Contract(usdtAddress, USDTAbi, signer);
 
-    const tx_1 = await USDTContract.approve(CustomTShirtNFTAddress, price * 10 ** 6);
+    const tx_1 = await USDTContract.approve(ERC20PortalContractAddress, price * 10 ** 18);
 
     await tx_1.wait();
 
@@ -125,9 +147,10 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
   const handleConfirmOrder = async () => {
     try {
       if (ParticleProvider) {
-        const NFTFactoryAddress = "0x869181609CD5A911aE43d695A03A38bba5F74A01";
-        const CustomTShirtNFTAddress = "0xb3f28ad65855aa0cd7949adb477e13085348f625";
-        const price = 4000; //Considering cents
+        const appContractAddress = ""
+        const ERC20PortalAddress =SepoliaJSON.contracts.ERC20Portal.address;
+        const USDTAddress = "";
+        const price = 40;
         const producerAddress = "0xBef52E7B385fB68d57C95558628e49d3c3997d4F";
 
         const customProvider = new ethers.providers.Web3Provider(
@@ -135,11 +158,11 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
         );
         const signer = customProvider.getSigner();
 
-        const NFTFactoryAbi = NFTFactoryJSON.abi;
+        const ERC20PortalAbi = SepoliaJSON.contracts.ERC20Portal.abi;
 
-        const NFTFactoryContract = new ethers.Contract(NFTFactoryAddress, NFTFactoryAbi, signer);
+        const ERC20PortalContract = new ethers.Contract(ERC20PortalAddress, ERC20PortalAbi, signer);
 
-        const tx_2 = await NFTFactoryContract.buyTShirt(CustomTShirtNFTAddress, 0, price, producerAddress);
+        const tx_2 = await ERC20PortalContract.depositERC20Tokens(USDTAddress, appContractAddress, price * 10 ** 18, "0x");
         await tx_2.wait();
         router.push("/orders");
       }
@@ -256,7 +279,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
               onChange={handleChange}
             />
             {!showApproveTransaction && !showConfirmOrder && (
-              <button className={style.confirmOrderButton} onClick={handleEstimatePrice}>
+              <button className={style.confirmOrderButton} onClick={() => handleEstimatePrice(1)}>
                 Estimate Price
               </button>
             )}

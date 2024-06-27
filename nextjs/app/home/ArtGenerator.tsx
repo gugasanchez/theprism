@@ -4,6 +4,7 @@ import SepoliaJSON from "../../utils/sepolia.json";
 import designApi, { Design } from "../../utils/designApi";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
+import axios from "axios";
 import { ethers } from "ethers";
 
 const ArtGenerator: React.FC = () => {
@@ -12,7 +13,13 @@ const ArtGenerator: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [latestDesign, setLatestDesign] = useState<Design | null>(null);
   const ParticleProvider = useParticleProvider();
+  // Novos states criados pelo Guga para gerar uma imagem com a API
+  const [imageData, setImageData] = useState(null);
+  const [ipfsUri, setIpfsUri] = useState(null);
+  const [json, setJson] = useState(null);
+  const [hex, setHex] = useState(null);
 
+  // Funçao antiga para criar um design usando a API
   const handleSubmit = async () => {
     setLoading(true); // Start loading
     setShowResult(true); // Immediately show result area
@@ -51,6 +58,27 @@ const ArtGenerator: React.FC = () => {
   // Helper function to convert image data to base64 string
   const imageToBase64 = (imageData: number[]) => {
     return btoa(String.fromCharCode(...new Uint8Array(imageData)));
+  };
+
+  // Nova função para gerar a imagem com API feita pelo Guga
+  const handleGenerateImage = async () => {
+    setShowResult(true);
+    setLoading(true);
+    console.log("Generating image with prompt: ", prompt);
+    try {
+      const response = await axios.post("/api/generateImage", { prompt });
+      setImageData(response.data.image);
+      setIpfsUri(response.data.uri);
+      console.log("IPFS URI: " + ipfsUri);
+      setJson(response.data.json);
+      console.log("JSON: " + json);
+      setHex(response.data.hex);
+      console.log("HEX: " + hex);
+    } catch (error) {
+      console.error("Error generating image:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGenerateNFT = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -96,8 +124,8 @@ const ArtGenerator: React.FC = () => {
                 value={prompt}
               />
             </div>
-            <button type="button" onClick={handleSubmit} className="btn btn-secondary btn-sm">
-              Create Art ✨
+            <button type="button" onClick={handleGenerateImage} className="btn btn-secondary btn-sm">
+              {loading ? "Generating..." : "Create Art ✨"}
             </button>
           </div>
         </div>
@@ -106,18 +134,10 @@ const ArtGenerator: React.FC = () => {
         <div className="w-full mt-4 flex flex-col items-center gap-4">
           {loading ? (
             <LoadingPlaceholder />
-          ) : latestDesign ? (
+          ) : imageData ? (
             <div className="flex flex-col items-center w-full blue-glassmorphism shadow-lg image-full">
-              <div className="card-body p-6">
-                <figure>
-                  <Image
-                    src={`data:image/jpeg;base64,${imageToBase64(latestDesign.image.data)}`}
-                    alt="Generated Art"
-                    width={200}
-                    height={200}
-                    objectFit="cover"
-                  />
-                </figure>
+              <div className="card-body p-6 w-80">
+                <img src={`data:image/jpeg;base64,${imageData}`} alt="Generated" />
               </div>
             </div>
           ) : (

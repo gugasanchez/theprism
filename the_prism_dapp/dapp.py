@@ -120,7 +120,6 @@ def create_design(prompt, userAddress, tokenURI):
         "prompt": prompt,
         "image": tokenURI,
         "owner": userAddress
-        #"image": encode_image_to_base64(f"design_{design_id}.png")
     }
     designs[design_id] = design
 
@@ -247,33 +246,6 @@ def handle_erc20_deposit(binary):
     notice = {"payload": str2hex(notice_str)}
     send_notice(notice)
 
-# def handle_erc20_deposit(binary):
-#     token_address = binary[0:20]
-#     depositor_binary = binary[20:40]
-#     totalAmount = int.from_bytes(binary[40:72], "big")
-#     manufacturerAmount = totalAmount * 9 // 10
-#     designerAmount = totalAmount - manufacturerAmount
-#     depositor_address = binary2hex(depositor_binary)
-
-#     result = get_last_order_details_by_wallet_address(depositor_address)
-
-#     manufacturer_address, designOwner = result['manufacturerAddress'], result['designOwner']
-#     print(f"Manufacturer Address: {manufacturer_address}")
-#     print(f"Design Owner: {designOwner}")
-
-#     manufacturer_notice = wallet._erc20_deposit(manufacturer_address, binary2hex(token_address), manufacturerAmount)
-#     manufacturer_response = requests.post(rollup_server + "/notice", json={"payload": manufacturer_notice.payload})
-#     print("Manufacturer notice posted!")
-
-#     designer_notice = wallet._erc20_deposit(designOwner, binary2hex(token_address), designerAmount)
-#     designer_response = requests.post(rollup_server + "/notice", json={"payload": designer_notice.payload})
-#     print("Designer notice posted!")
-
-#     notice_str = f"Deposit received from: {depositor_address}; ERC-20: {binary2hex()}; Amount: {totalAmount}; Manufacturer address: {manufacturer_address}; Designer address: {designOwner}"
-#     logger.info(f"Adding notice: {notice_str}")
-#     notice = {"payload": str2hex(notice_str)}
-#     send_notice(notice)
-
 def erc20_transfer_voucher(token_address,receiver,amount):
     transfer_payload = TRANSFER_FUNCTION_SELECTOR + encode(['address','uint256'], [receiver, amount])
     voucher = {"destination": token_address, "payload": "0x" + transfer_payload.hex()}
@@ -327,8 +299,8 @@ def handle_advance(data):
             send_report({"payload": str2hex(f'{report_payload}')})
             
         elif json_data["method"] == "create_design":
-            design = create_design(json_data["prompt"], json_data["userAddress"], json_data["tokenURI"])
-            NFT_voucher = NFT_create_voucher(json_data["userAddress"], json_data["tokenURI"])
+            design = create_design(json_data["prompt"], json_data["userAddress"], json_data["uri"])
+            NFT_voucher = NFT_create_voucher(json_data["userAddress"], json_data["uri"])
             report_payload = {"design_id": design["id"]}
             send_voucher(NFT_voucher)
             send_report({"payload": str2hex(f'{report_payload}')})

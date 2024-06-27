@@ -13,52 +13,10 @@ const ArtGenerator: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [latestDesign, setLatestDesign] = useState<Design | null>(null);
   const ParticleProvider = useParticleProvider();
-  // Novos states criados pelo Guga para gerar uma imagem com a API
   const [imageData, setImageData] = useState(null);
   const [ipfsUri, setIpfsUri] = useState(null);
-  const [json, setJson] = useState(null);
-  const [hex, setHex] = useState(null);
-
-  // Funçao antiga para criar um design usando a API
-  const handleSubmit = async () => {
-    setLoading(true); // Start loading
-    setShowResult(true); // Immediately show result area
-    try {
-      // Create a new design with the provided prompt
-      // await designApi.createDesign(prompt);
-      // After creating, fetch the latest design to update the UI
-      // const designs = await designApi.getDesigns();
-      // const newLatestDesign = designs[designs.length - 1];
-      // setLatestDesign(newLatestDesign);
-
-      const appContractAddress = "";
-      const payload = "0x7b226d6574686f64223a20226164645f75736572222c20226e616d65223a2022506564726f222c2022656d61696c223a2022746573746540676d61696c2e636f6d227d"; 
-      const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(payload));
-  
-      const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
-      const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
-      const signer = customProvider.getSigner();
-  
-      const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
-  
-      const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
-  
-      const transaction = await InputBoxContract.addInput(appContractAddress, payload);
-  
-      await transaction.wait();
-
-    } catch (error) {
-      console.error("Failed to create or fetch designs", error);
-    }
-    setLoading(false); // End loading
-
-    
-  };
-
-  // Helper function to convert image data to base64 string
-  const imageToBase64 = (imageData: number[]) => {
-    return btoa(String.fromCharCode(...new Uint8Array(imageData)));
-  };
+  const [json, setJson] = useState<string | null>(null);
+  const [hex, setHex] = useState<string | null>(null);
 
   // Nova função para gerar a imagem com API feita pelo Guga
   const handleGenerateImage = async () => {
@@ -81,28 +39,40 @@ const ArtGenerator: React.FC = () => {
     }
   };
 
-  const handleGenerateNFT = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+const handleGenerateNFT = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault();
 
-    const appContractAddress = "";
-    const payloadBytes = "";
+  if (!hex) {
+    console.error("Hex data is not set");
+    return;
+  }
 
-    const imageUrl =
-      "https://img.freepik.com/fotos-premium/uma-camisa-branca-com-fundo-preto-e-as-costas_653449-538.jpg";
-    const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
-    const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
-    const signer = customProvider.getSigner();
+  const appContractAddress = "";
+  
+  const prefixedHex = hex.startsWith("0x") ? hex : "0x" + hex;
 
-    const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
+  const jsonString = ethers.utils.toUtf8String(ethers.utils.arrayify(prefixedHex));
+  let jsonData = JSON.parse(jsonString);
 
-    const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
+  const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
+  const signer = customProvider.getSigner();
+  const userAddress = await signer.getAddress();
 
-    const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
+  jsonData.method = "create_design";
+  jsonData.userAddress = userAddress;
 
-    await transaction.wait();
+  const updatedJsonString = JSON.stringify(jsonData);
+  const updatedPayloadHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(updatedJsonString));
 
-    console.log("Generate NFT");
-  };
+  const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
+  const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
+  
+  const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
+  
+  const transaction = await InputBoxContract.addInput(InputBoxAddress, updatedPayloadHex);
+
+  await transaction.wait();
+};
 
   const LoadingPlaceholder = () => (
     <div className="animate-pulse flex flex-col items-center justify-center h-40 w-full blue-glassmorphism rounded-lg">

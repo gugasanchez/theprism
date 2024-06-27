@@ -41,6 +41,34 @@ const Designs = () => {
   );
 
   const withdrawRoyalties = async () => {
+    console.log("Trying to execute voucher...");
+
+    const ERC20_TRANSFER_FUNCTION_SELECTOR = '0xa9059cbb';
+    const USDTAddress = "";
+
+    const CartesiDAPPAddress = "";
+    const CartesiDAPPABI = SepoliaJSON.contracts.ApplicationFactory.abi;
+  
+    const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
+    const signer = customProvider.getSigner();
+    const signerAddress = await signer.getAddress();
+
+    const CartesiDAPPContract = new ethers.Contract(CartesiDAPPAddress, CartesiDAPPABI, signer);
+
+    const amount = ethers.utils.parseUnits("10", 18);    
+
+    const abiCoder = new ethers.utils.AbiCoder();
+    const encodedParams = abiCoder.encode(['address', 'uint256'], [signerAddress, amount]);
+    const voucherPayload = ERC20_TRANSFER_FUNCTION_SELECTOR + encodedParams.slice(2);
+    const proof = "";
+    const transaction = await CartesiDAPPContract.executeVoucher(USDTAddress, voucherPayload, proof);
+  
+    await transaction.wait();
+
+    setBalance(0);
+  };
+
+  const askForWithdraw = async () => {
     console.log("Withdrawing royalties...");
 
     const createWithdrawPayload = {
@@ -90,13 +118,21 @@ const Designs = () => {
               ))}
             </div>
             <div className="mt-8 w-full flex flex-col items-center justify-center">
-              <h2 className="text-2xl font-semibold text-white mb-4 shadow-md">Royalty Balance: {balance} USDT</h2>{" "}
-              <button
-                onClick={withdrawRoyalties}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Withdraw Royalties
-              </button>
+              <h2 className="text-2xl font-semibold text-white mb-4 shadow-md">Royalty Balance: {balance} USDT</h2>
+              <div className="flex space-x-4">
+                <button
+                  onClick={askForWithdraw}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Ask for Withdraw Royalties
+                </button>
+                <button
+                  onClick={withdrawRoyalties}
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Withdraw Royalties
+                </button>
+              </div>
             </div>
           </div>
         )}

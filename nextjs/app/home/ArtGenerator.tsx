@@ -24,7 +24,7 @@ const ArtGenerator: React.FC = () => {
       // const newLatestDesign = designs[designs.length - 1];
       // setLatestDesign(newLatestDesign);
 
-      const appContractAddress = "0x0Df1286de37637c966d55952388360fA2971aDa1";
+      const appContractAddress = "";
       const payload = "0x7b226d6574686f64223a20226164645f75736572222c20226e616d65223a2022506564726f222c2022656d61696c223a2022746573746540676d61696c2e636f6d227d"; 
       const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(payload));
   

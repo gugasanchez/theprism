@@ -55,11 +55,7 @@ const Designs = () => {
 
     const CartesiDAPPContract = new ethers.Contract(CartesiDAPPAddress, CartesiDAPPABI, signer);
 
-    const amount = ethers.utils.parseUnits("10", 18);    
-
-    const abiCoder = new ethers.utils.AbiCoder();
-    const encodedParams = abiCoder.encode(['address', 'uint256'], [signerAddress, amount]);
-    const voucherPayload = ERC20_TRANSFER_FUNCTION_SELECTOR + encodedParams.slice(2);
+    const voucherPayload = "";
     const proof = "";
     const transaction = await CartesiDAPPContract.executeVoucher(USDTAddress, voucherPayload, proof);
   

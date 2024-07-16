@@ -19,11 +19,7 @@ Unleash your creativity with The Prism, a cutting-edge platform where art meets 
 - **🔗 Particle Connect Service**: Enables users to use not only Web 3.0 wallets (like Metamask) but also Social Wallets (like Google), through Particle technology, facilitating mass adoption of our dApp by simplifying the login and wallet management process.
 
 ## 🏗️ System Architecture
-
-<div align="center">
-  <img src="https://github.com/ryanviana/the-prism_eth-samba/assets/70733914/e4555502-4d6e-4235-a39a-298bd192b9ca" width="300" style="margin: 20px;" alt="Workflow Process"/> 
-  <img src="https://github.com/ryanviana/the-prism_eth-samba/assets/70733914/bfc72bd9-7d41-48b3-bbd8-7b8bf6afc1b9" width="300" style="margin: 20px;" alt="NFT Architecture"/>
-</div>
+![the-prism-architecture](https://github.com/user-attachments/assets/0714b44f-2c69-48a6-8876-0a5b4bf6406d)
 
 <p align="center">
   <i>Explore the foundational structure and detailed components that drive our platform, alongside the workflow process that ensures seamless operation.</i>
@@ -39,7 +35,7 @@ Harnessing the power of Stable Diffusion, our platform generates unique digital 
 
 - **🔍 Why Stable Diffusion**: We chose Stable Diffusion due to its robust capabilities in generating high-quality, detailed images. It excels in creating art that meets the aesthetic and technical requirements of digital and physical merchandise.
 
-- **💻 C++ Implementation**: The Stable Diffusion model runs as a C++ program within our platform. This choice ensures optimal performance and integration with our backend systems, leveraging the efficiency and speed of C++ for image generation tasks.
+- **💻 C++ Implementation**: The Stable Diffusion model runs as a C++ program within our platform. This choice ensures optimal performance and integration with our backend systems, as less performing languages couldn't even handle the art generation process on-chain due to its complexity.
 
 - **🔗 Interacting with the Cartesi Machine**: The core of our platform's computing power is the Cartesi Machine. By running the Stable Diffusion model within a RISC-V architecture, the Cartesi Machine ensures that each generated piece of art is verifiably unique and secure. This interaction demonstrates the "superpower" of Cartesi, enhancing the capabilities of decentralized applications.
 
@@ -47,11 +43,8 @@ Harnessing the power of Stable Diffusion, our platform generates unique digital 
   - **Docker**: Containerization with Docker ensures that our applications run smoothly across different environments. It provides consistency and reliability in the deployment of the Stable Diffusion model.
   - **RISC-V Architecture**: By leveraging the RISC-V architecture within the Cartesi Machine, we ensure that our computations are efficient and secure, taking full advantage of open-source hardware innovations.
   - **Blockchain Integration**: All operations related to art generation, minting NFTs, and handling transactions are securely managed on the blockchain, powered by Cartesi technology. This integration guarantees transparency and trust throughout the creative process.
-
-### Tailored Design Generation
-
-- **👕 T-Shirt Design Focus**: Our models will undergo specific training to optimize the generation of t-shirt designs that are not only aesthetically pleasing but also suitable for manufacturing, based on user inputs.
-- **⚙️ Manufacturing Parameters Integration**: In addition to design aesthetics, the model will consider optimal manufacturing parameters to ensure that designs are ready for production, enhancing the bridge between digital creativity and physical merchandise.
+ 
+**Note: even though the image generation process works as mentioned above, a so complex computation is made on-chain, that images can take longer than 10 hours to be created. Considering this, in order to provide a better UX to our users, the standart way to generate the AI designs on The Prism Frontend uses a Stable Diffusion API, that can provide the image in seconds. During this process, many relevant data about the image is stored on the blockchain, so that it has a proof of authenticity.**
 
 ## 🛠️ Services Stack
 

@@ -43,8 +43,6 @@ Harnessing the power of Stable Diffusion, our platform generates unique digital 
   - **Docker**: Containerization with Docker ensures that our applications run smoothly across different environments. It provides consistency and reliability in the deployment of the Stable Diffusion model.
   - **RISC-V Architecture**: By leveraging the RISC-V architecture within the Cartesi Machine, we ensure that our computations are efficient and secure, taking full advantage of open-source hardware innovations.
   - **Blockchain Integration**: All operations related to art generation, minting NFTs, and handling transactions are securely managed on the blockchain, powered by Cartesi technology. This integration guarantees transparency and trust throughout the creative process.
- 
-**Note: even though the image generation process works as mentioned above, a so complex computation is made on-chain, that images can take longer than 10 hours to be created. Considering this, in order to provide a better UX to our users, the standart way to generate the AI designs on The Prism Frontend uses a Stable Diffusion API, that can provide the image in seconds. During this process, many relevant data about the image is stored on the blockchain, so that it has a proof of authenticity.**
 
 ## 🛠️ Services Stack
 
@@ -91,6 +89,100 @@ Our platform leverages a cutting-edge stack of technologies and services designe
 - **[Our Demo](https://www.youtube.com/watch?v=c19WSWHkE6w)**: Experience The Prism Platform in action. Our demo provides a hands-on look at how users can create, mint, and translate digital art into physical products seamlessly.
 
 - **[Our Backend](https://the-prism-backend.vercel.app/designs)**: The Prism Backend stores and manages base64 encoded images, designed for easy frontend integration.
+
+Aqui está a seção de "Setup and Installation Guides" para seu README.md:
+
+## Setup and Installation Guides
+
+### Frontend Setup
+
+1. **Accessing the Application:**
+   - Visit [The Prism Frontend](https://the-prism-eth-samba.vercel.app/) to use the application. The frontend is deployed and available at this domain.
+
+2. **Running the Frontend Locally:**
+   - Clone the repository:
+     ```bash
+     git clone https://github.com/gugasanchez/theprism.git
+     cd theprism
+     cd nextjs
+     ```
+   - Install the dependencies:
+     ```bash
+     yarn install
+     ```
+   - Start the development server:
+     ```bash
+     yarn start
+     ```
+   - Open your browser and navigate to `http://localhost:3000` to see the application running locally.
+
+### Backend Setup
+
+1. **Accessing the Backend:**
+   - The backend is continuously running and can be accessed at [The Prism Backend](https://theprism.fly.dev/graphql).
+
+2. **Running the Backend Locally:**
+   - Navigate to the backend directory:
+     ```bash
+     git clone https://github.com/gugasanchez/theprism-backend.git
+     cd the_prism_dapp
+     ```
+   - Install the dependencies:
+     ```bash
+     cartesi build
+     ```
+   - Start the backend server:
+     ```bash
+     cartesi run
+     ```
+   - Watch the backend running in the displayed port.
+
+### Implementing Stable Diffusion in C++
+
+To generate images using the Stable Diffusion model implemented in C++, follow these steps:
+
+1. **Prepare the Environment:**
+   - Ensure Docker is installed and running on your machine.
+   - Navigate to the repository containing the Stable Diffusion C++ implementation:
+     ```bash
+     cd the_prism_diffusion
+     ```
+
+2. **Build the Docker Image:**
+   - Build the Docker image to create a containerized environment for running Stable Diffusion:
+     ```bash
+     docker build -t the_prism_diffusion .
+     ```
+
+3. **Running Stable Diffusion:**
+   - Start the Docker container:
+     ```bash
+     docker run -it the_prism_diffusion
+     ```
+
+4. **Generate an Image:**
+   - Send a JSON request containing the prompt and other parameters to the Cartesi Machine:
+     ```json
+     {
+       "prompt": "A beautiful landscape painting",
+       "parameters": {
+         "width": 512,
+         "height": 512,
+         "steps": 50
+       }
+     }
+     ```
+   - The Cartesi Machine processes the request and generates the command to run Stable Diffusion with the provided data.
+   - The Stable Diffusion model generates the image.
+   - The generated image is transformed into Base64 and then into hexadecimal format.
+   - A report containing the hexadecimal data of the image is generated.
+
+5. **Access the Generated Image:**
+   - The user can access the image through the generated report, for example by decoding the hexadecimal to a string and then converting the Base64 string to a PNG image.
+
+**Note:** The on-chain image generation can be time-consuming (over 10 hours). For a better user experience, the standard method uses a Stable Diffusion API to generate images in seconds while storing relevant data on the blockchain for authenticity proof.
+
+---
 
 ### Conclusion
 Our project is at the forefront of combining machine learning with fashion design, creating a unique platform for personalized apparel. As we continue to develop and refine our technology, we aim to offer users an unparalleled ability to bring their creative visions to life, whether through owning a unique piece of wearable art or by stepping into the role of a designer in the digital marketplace.

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { WalletEntryPosition } from "@particle-network/auth";
-import { EthereumSepolia } from "@particle-network/chains";
+import { EthereumSepolia, Localhost } from "@particle-network/chains";
 import { evmWallets } from "@particle-network/connect";
 import { ModalProvider } from "@particle-network/connect-react-ui";
 import { Toaster } from "react-hot-toast";
@@ -13,6 +13,8 @@ import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
+import { GraphQLProvider } from "./GraphQL";
+import { localhost } from "viem/chains";
 
 const ThePrismApp = ({ children }: { children: React.ReactNode }) => {
   const price = useNativeCurrencyPrice();
@@ -62,7 +64,9 @@ export const ThePrismAppWithProviders = ({ children }: { children: React.ReactNo
         walletSort={["Particle Auth", "Wallet"]}
         particleAuthSort={["email", "phone", "google", "apple", "facebook"]}
       >
-        <ThePrismApp>{children}</ThePrismApp>
+        <GraphQLProvider>
+          <ThePrismApp>{children}</ThePrismApp>
+        </GraphQLProvider>
       </ModalProvider>
     </WagmiConfig>
   );

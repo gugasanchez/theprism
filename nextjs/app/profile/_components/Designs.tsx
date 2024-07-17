@@ -6,13 +6,28 @@ import SepoliaJSON from "../../../utils/sepolia.json";
 import designApi, { Design } from "../../../utils/designApi";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
+import { useVouchersQuery } from "../../../src/generated/graphql";
+
+type Voucher = {
+  id: string;
+  index: number;
+  destination: string;
+  input: any; // {index: number; epoch: {index: number; }}
+  payload: string;
+  proof: any;
+  executed: any;
+};
 
 const Designs = () => {
   const [designs, setDesigns] = useState<Design[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [balance, setBalance] = useState(0); // Assuming 100 as an example balance
   const ParticleProvider = useParticleProvider();
+
+  const [result, reexecuteQuery] = useVouchersQuery();
+  const { data, fetching, error } = result;
+  const [voucherToExecute, setVoucherToExecute] = React.useState<any>();
 
   useEffect(() => {
     const fetchDesigns = async () => {
@@ -30,38 +45,60 @@ const Designs = () => {
     fetchDesigns();
   }, []);
 
-  const LoadingPlaceholder = () => (
-    <div className="animate-pulse flex flex-wrap justify-center items-center gap-4">
-      {[...Array(4)].map((_, index) => (
-        <div key={index} className="w-[14rem] h-[22rem] my-5 mx-5 rounded-2xl bg-gray-300">
-          <div className="h-64 bg-gray-300 rounded-lg"></div>
-        </div>
-      ))}
-    </div>
-  );
+  useEffect(() => {
+    if (!fetching && data && data.vouchers) {
+      getUserVoucher();
+    }
+  }, [fetching, data]);
 
-  const withdrawRoyalties = async () => {
+  const getUserVoucher = async () => {
+    const USDTAddress = "0x59b670e9fA9D0A427751Af201D676719a970857b";
+    // const customProvider = new ethers.providers.Web3Provider(
+    //   ParticleProvider as ExternalProvider | JsonRpcFetchFunc
+    // );
+    // const signer = customProvider.getSigner();
+    // const userAddress = signer.getAddress();
+
+    try {
+      if (data && data.vouchers.edges.length > 0) {
+        const voucher = data.vouchers.edges.find(
+          ({ node }: any) =>
+            node.destination.toLowerCase() === USDTAddress /*&&*/
+            // node.payload.toLowerCase() === "0x123456"
+        );
+
+        if (voucher) {
+          setVoucherToExecute(voucher.node);
+        } else {
+          console.error("Voucher not found");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching voucher:", error);
+    }
+  };
+
+  const withdrawRoyalties = async (voucher: Voucher) => {
     console.log("Trying to execute voucher...");
 
-    const ERC20_TRANSFER_FUNCTION_SELECTOR = '0xa9059cbb';
-    const USDTAddress = "";
-
-    const CartesiDAPPAddress = "";
+    const CartesiDAPPAddress = SepoliaJSON.contracts.ApplicationFactory.address;
     const CartesiDAPPABI = SepoliaJSON.contracts.ApplicationFactory.abi;
-  
-    const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
-    const signer = customProvider.getSigner();
-    const signerAddress = await signer.getAddress();
 
-    const CartesiDAPPContract = new ethers.Contract(CartesiDAPPAddress, CartesiDAPPABI, signer);
+    try {
+      const customProvider = new ethers.providers.Web3Provider(
+        ParticleProvider as ExternalProvider | JsonRpcFetchFunc
+      );
+      const signer = customProvider.getSigner();
+      const CartesiDAPPContract = new ethers.Contract(CartesiDAPPAddress, CartesiDAPPABI, signer);
 
-    const voucherPayload = "";
-    const proof = "";
-    const transaction = await CartesiDAPPContract.executeVoucher(USDTAddress, voucherPayload, proof);
-  
-    await transaction.wait();
+      const transaction = await CartesiDAPPContract.executeVoucher(voucher.destination, voucher.payload, voucher.proof);
+      await transaction.wait();
 
-    setBalance(0);
+      console.log("Voucher executed successfully.");
+      setBalance(0); // Update the balance accordingly
+    } catch (error) {
+      console.error("Error executing voucher:", error);
+    }
   };
 
   const askForWithdraw = async () => {
@@ -70,13 +107,15 @@ const Designs = () => {
     const createWithdrawPayload = {
       method: "erc20_withdraw",
     };
-  
+
     const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createWithdrawPayload)));
 
     const appContractAddress = "";
     const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
 
-    const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
+    const customProvider = new ethers.providers.Web3Provider(
+      ParticleProvider as ExternalProvider | JsonRpcFetchFunc
+    );
     const signer = customProvider.getSigner();
 
     const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
@@ -90,6 +129,16 @@ const Designs = () => {
     setBalance(0);
   };
 
+  const LoadingPlaceholder = () => (
+    <div className="animate-pulse flex flex-wrap justify-center items-center gap-4">
+      {[...Array(4)].map((_, index) => (
+        <div key={index} className="w-[14rem] h-[22rem] my-5 mx-5 rounded-2xl bg-gray-300">
+          <div className="h-64 bg-gray-300 rounded-lg"></div>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="flex flex-col flex-1 items-center">
       <div className="flex flex-col items-start sm:w-[70%] w-full sm:px-0 px-4 py-10">
@@ -99,7 +148,7 @@ const Designs = () => {
         ) : (
           <div className="justify-between items-center flex flex-grow flex-col p-8 gap-4 blue-glassmorphism rounded-3xl shadow-md shadow-secondary border border-base-300 w-full">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-center items-start">
-              {designs.map(design => (
+              {designs.map((design) => (
                 <NFTCard
                   key={design._id}
                   nftItem={{
@@ -123,7 +172,7 @@ const Designs = () => {
                   Ask for Withdraw Royalties
                 </button>
                 <button
-                  onClick={withdrawRoyalties}
+                  onClick={() => withdrawRoyalties(voucherToExecute)}
                   className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                 >
                   Withdraw Royalties

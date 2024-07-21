@@ -33,18 +33,21 @@ const ProfileInfoForm = () => {
     const msgSenderAddress = await signer.getAddress();
 
     const createUserPayload = {
-      method: "create_user",
+      "method": "create_user",
       name: name,
       userAddress: msgSenderAddress,
       email: email,
     };
 
-    console.log("createOrderPayload:", createUserPayload);
+    console.log("JSON:", createUserPayload);
 
     const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createUserPayload)));
+
+    console.log("createOrderPayload:", payloadBytes);
+
     const appContractAddress = "0xEC4dfE9E48F9358b14CC724fC38caFee933c86E7";
 
-    const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
+    const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
     const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
 
     const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);

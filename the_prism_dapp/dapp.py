@@ -170,10 +170,10 @@ def get_last_order_details_by_wallet_address(wallet_address):
         return None
 
 def NFT_create_voucher(_to, _tokenURI) -> dict:
-    global CREATE_NFT_FUNCTION_SIGNATURE
+    global KECCAK_CREATE_NFT_FUNCTION_SIGNATURE
 
     data = encode(['address', 'string'], [_to, _tokenURI])
-    voucherPayload = CREATE_NFT_FUNCTION_SIGNATURE + data.hex()
+    voucherPayload = KECCAK_CREATE_NFT_FUNCTION_SIGNATURE + data.hex()
     voucher = {"destination": DESIGN_NFT_ADDRESS, "payload": voucherPayload}
     return voucher
 

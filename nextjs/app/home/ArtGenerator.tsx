@@ -46,30 +46,32 @@ const handleGenerateNFT = async (e: React.MouseEvent<HTMLButtonElement>) => {
     console.error("Hex data is not set");
     return;
   }
-
-  const appContractAddress = "";
   
-  const prefixedHex = hex.startsWith("0x") ? hex : "0x" + hex;
-
-  const jsonString = ethers.utils.toUtf8String(ethers.utils.arrayify(prefixedHex));
-  let jsonData = JSON.parse(jsonString);
-
   const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
   const signer = customProvider.getSigner();
-  const userAddress = await signer.getAddress();
+  const msgSenderAddress = await signer.getAddress();
 
-  jsonData.method = "create_design";
-  jsonData.userAddress = userAddress;
+  const createDesignPayload = {
+    "method": "create_design",
+    prompt: prompt,
+    userAddress: msgSenderAddress,
+    uri: ipfsUri,
+  };
 
-  const updatedJsonString = JSON.stringify(jsonData);
-  const updatedPayloadHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(updatedJsonString));
+  console.log("JSON:", createDesignPayload);
 
-  const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
+  const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createDesignPayload)));
+
+  console.log("createOrderPayload:", payloadBytes);
+
+  const appContractAddress = "0xEC4dfE9E48F9358b14CC724fC38caFee933c86E7";
+
+  const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
   const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
   
   const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
   
-  const transaction = await InputBoxContract.addInput(InputBoxAddress, updatedPayloadHex);
+  const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
 
   await transaction.wait();
 };

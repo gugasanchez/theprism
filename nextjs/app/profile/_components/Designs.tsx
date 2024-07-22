@@ -52,7 +52,7 @@ const Designs = () => {
   }, [fetching, data]);
 
   const getUserVoucher = async () => {
-    const USDTAddress = "0x59b670e9fA9D0A427751Af201D676719a970857b";
+    const USDTAddress = "0xD1A65309dF5AA03b7De9A95D1b6C8496Aff94Aa1";
     // const customProvider = new ethers.providers.Web3Provider(
     //   ParticleProvider as ExternalProvider | JsonRpcFetchFunc
     // );

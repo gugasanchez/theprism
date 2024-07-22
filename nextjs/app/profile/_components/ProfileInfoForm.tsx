@@ -45,7 +45,7 @@ const ProfileInfoForm = () => {
 
     console.log("createOrderPayload:", payloadBytes);
 
-    const appContractAddress = "0xEC4dfE9E48F9358b14CC724fC38caFee933c86E7";
+    const appContractAddress = "0x4c859Afa62AdA1D688e14fC062a4E0A2F10085E9";
 
     const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
     const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;

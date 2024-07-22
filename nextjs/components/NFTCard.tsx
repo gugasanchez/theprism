@@ -100,10 +100,12 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
       manufacturerAddress: "0x0Df1286de37637c966d55952388360fA2971aDa1"
     };
   
+    console.log("JSON:", createOrderPayload);
+
     const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createOrderPayload)));
-    const appContractAddress = "";
+    const appContractAddress = "0x4c859Afa62AdA1D688e14fC062a4E0A2F10085E9";
   
-    const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
+    const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
     const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
   
     const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
@@ -123,8 +125,8 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
   
 
   const handleApproveTransaction = async () => {
-    const usdtAddress = "";
-    const ERC20PortalContractAddress = "";
+    const usdtAddress = "0xD1A65309dF5AA03b7De9A95D1b6C8496Aff94Aa1";
+    const ERC20PortalContractAddress = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB";
     const price = 40;
 
     const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
@@ -147,11 +149,10 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
   const handleConfirmOrder = async () => {
     try {
       if (ParticleProvider) {
-        const appContractAddress = ""
-        const ERC20PortalAddress =SepoliaJSON.contracts.ERC20Portal.address;
-        const USDTAddress = "";
+        const appContractAddress = "0x4c859Afa62AdA1D688e14fC062a4E0A2F10085E9"
+        const ERC20PortalAddress = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB";
+        const USDTAddress = "0xD1A65309dF5AA03b7De9A95D1b6C8496Aff94Aa1";
         const price = 40;
-        const producerAddress = "0xBef52E7B385fB68d57C95558628e49d3c3997d4F";
 
         const customProvider = new ethers.providers.Web3Provider(
           ParticleProvider as ExternalProvider | JsonRpcFetchFunc,
@@ -162,7 +163,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings }) => {
 
         const ERC20PortalContract = new ethers.Contract(ERC20PortalAddress, ERC20PortalAbi, signer);
 
-        const tx_2 = await ERC20PortalContract.depositERC20Tokens(USDTAddress, appContractAddress, price * 10 ** 18, "0x");
+        const tx_2 = await ERC20PortalContract.depositERC20Tokens(USDTAddress, appContractAddress, price /* * 10 ** 18 */ , "0x");
         await tx_2.wait();
         router.push("/orders");
       }

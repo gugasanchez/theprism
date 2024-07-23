@@ -1,5 +1,6 @@
 const FormData = require('form-data');
 const axios = require('axios');
+import designApi from "../../utils/designApi";
 
 const api_key = process.env.NEXT_PUBLIC_SEGMIND_API_KEY;
 const JWT = process.env.NEXT_PUBLIC_PINATA_API_KEY;
@@ -93,23 +94,39 @@ function createJsonAndConvertToHex(prompt, ipfsUri) {
 }
 
 export default async function handler(req, res) {
-    const { prompt } = req.body;
+  const { prompt } = req.body;
 
-    if (!prompt) {
-        return res.status(400).json({ error: 'Prompt is required' });
-    }
+  if (!prompt) {
+    return res.status(400).json({ error: 'Prompt is required' });
+  }
 
-    try {
-        const imageBase64 = await generateImage(prompt);
-        console.log('Generated base64 image.'); // Debugging line
-        const ipfsUri = await uploadToIPFS(imageBase64);
-        console.log('IPFS URI:', ipfsUri); // Debugging line
-        const { json, hex } = createJsonAndConvertToHex(prompt, ipfsUri);
-        console.log('JSON: ', json);  // Debugging line
-        console.log('HEX', hex);  // Debugging line
-        res.status(200).json({ image: imageBase64, uri: ipfsUri, json, hex });
-    } catch (error) {
-        console.error('Error in handler:', error.message);
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    console.log('Received prompt:', prompt);
+
+    const imageBase64 = await generateImage(prompt);
+    console.log('Generated base64 image:', imageBase64 ? 'Image generated successfully' : 'Failed to generate image');
+
+    const ipfsUri = await uploadToIPFS(imageBase64);
+    console.log('IPFS URI:', ipfsUri);
+
+    const { json, hex } = createJsonAndConvertToHex(prompt, ipfsUri);
+    console.log('JSON:', json);
+    console.log('HEX:', hex);
+
+    console.log('Creating design with prompt and image data...');
+    await designApi.createDesign(prompt);
+    console.log('Design created with prompt:', prompt);
+
+    // Fetch the latest designs to get the newly created design
+    const designs = await designApi.getDesigns();
+    const newLatestDesign = designs[designs.length - 1];
+    console.log('New latest design:', newLatestDesign);
+
+    res.status(200).json({ image: imageBase64, uri: ipfsUri, json, hex, design: newLatestDesign });
+  } catch (error) {
+    console.error('Error in handler:', error.message);
+    console.error('Full error:', error);
+    res.status(500).json({ error: error.message });
+  }
 }
+

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Image from "next/image";
 import designApi, { Design } from "../../utils/designApi";
 import SepoliaJSON from "../../utils/sepolia.json";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
@@ -18,20 +17,22 @@ const ArtGenerator: React.FC = () => {
   const [json, setJson] = useState<string | null>(null);
   const [hex, setHex] = useState<string | null>(null);
 
-  // Nova função para gerar a imagem com API feita pelo Guga
   const handleGenerateImage = async () => {
     setShowResult(true);
     setLoading(true);
     console.log("Generating image with prompt: ", prompt);
     try {
       const response = await axios.post("/api/generateImage", { prompt });
-      setImageData(response.data.image);
-      setIpfsUri(response.data.uri);
-      setJson(response.data.json);
-      setHex(response.data.hex);
-      console.log("IPFS URI: " + response.data.uri);
-      console.log("JSON: " + response.data.json);
-      console.log("HEX: " + response.data.hex);
+      const { image, uri, json, hex, design } = response.data;
+      setImageData(image);
+      setIpfsUri(uri);
+      setJson(json);
+      setHex(hex);
+      setLatestDesign(design);
+      console.log("IPFS URI: " + uri);
+      console.log("JSON: " + json);
+      console.log("HEX: " + hex);
+      console.log("Design: ", design);
     } catch (error) {
       console.error("Error generating image:", error);
     } finally {

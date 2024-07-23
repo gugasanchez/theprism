@@ -101,10 +101,15 @@ export default async function handler(req, res) {
 
     try {
         const imageBase64 = await generateImage(prompt);
+        console.log('Generated base64 image.'); // Debugging line
         const ipfsUri = await uploadToIPFS(imageBase64);
+        console.log('IPFS URI:', ipfsUri); // Debugging line
         const { json, hex } = createJsonAndConvertToHex(prompt, ipfsUri);
+        console.log('JSON: ', json);  // Debugging line
+        console.log('HEX', hex);  // Debugging line
         res.status(200).json({ image: imageBase64, uri: ipfsUri, json, hex });
     } catch (error) {
+        console.error('Error in handler:', error.message);
         res.status(500).json({ error: error.message });
     }
 }

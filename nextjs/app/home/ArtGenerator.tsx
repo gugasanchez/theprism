@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import SepoliaJSON from "../../utils/sepolia.json";
 import designApi, { Design } from "../../utils/designApi";
+import SepoliaJSON from "../../utils/sepolia.json";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
 import axios from "axios";
@@ -27,11 +27,11 @@ const ArtGenerator: React.FC = () => {
       const response = await axios.post("/api/generateImage", { prompt });
       setImageData(response.data.image);
       setIpfsUri(response.data.uri);
-      console.log("IPFS URI: " + ipfsUri);
       setJson(response.data.json);
-      console.log("JSON: " + json);
       setHex(response.data.hex);
-      console.log("HEX: " + hex);
+      console.log("IPFS URI: " + response.data.uri);
+      console.log("JSON: " + response.data.json);
+      console.log("HEX: " + response.data.hex);
     } catch (error) {
       console.error("Error generating image:", error);
     } finally {
@@ -39,42 +39,42 @@ const ArtGenerator: React.FC = () => {
     }
   };
 
-const handleGenerateNFT = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  e.preventDefault();
+  const handleGenerateNFT = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
 
-  if (!hex) {
-    console.error("Hex data is not set");
-    return;
-  }
-  
-  const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
-  const signer = customProvider.getSigner();
-  const msgSenderAddress = await signer.getAddress();
+    if (!hex) {
+      console.error("Hex data is not set");
+      return;
+    }
 
-  const createDesignPayload = {
-    "method": "create_design",
-    prompt: prompt,
-    userAddress: msgSenderAddress,
-    uri: ipfsUri,
+    const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
+    const signer = customProvider.getSigner();
+    const msgSenderAddress = await signer.getAddress();
+
+    const createDesignPayload = {
+      method: "create_design",
+      prompt: prompt,
+      userAddress: msgSenderAddress,
+      uri: ipfsUri,
+    };
+
+    console.log("JSON:", createDesignPayload);
+
+    const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createDesignPayload)));
+
+    console.log("createOrderPayload:", payloadBytes);
+
+    const appContractAddress = "0x4c859Afa62AdA1D688e14fC062a4E0A2F10085E9";
+
+    const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
+    const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
+
+    const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
+
+    const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
+
+    await transaction.wait();
   };
-
-  console.log("JSON:", createDesignPayload);
-
-  const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createDesignPayload)));
-
-  console.log("createOrderPayload:", payloadBytes);
-
-  const appContractAddress = "0x4c859Afa62AdA1D688e14fC062a4E0A2F10085E9";
-
-  const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
-  const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
-  
-  const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
-  
-  const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
-
-  await transaction.wait();
-};
 
   const LoadingPlaceholder = () => (
     <div className="animate-pulse flex flex-col items-center justify-center h-40 w-full blue-glassmorphism rounded-lg">

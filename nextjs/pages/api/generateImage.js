@@ -1,6 +1,6 @@
+import designApi from "../../utils/designApi";
 const FormData = require('form-data');
 const axios = require('axios');
-import designApi from "../../utils/designApi";
 
 const api_key = process.env.NEXT_PUBLIC_SEGMIND_API_KEY;
 const JWT = process.env.NEXT_PUBLIC_PINATA_API_KEY;
@@ -25,7 +25,7 @@ async function generateImage(prompt) {
         const response = await axios.post(url, data, { headers: { 'x-api-key': api_key } });
         console.log('API response:', response.data);
         if (response.status === 200 && response.data.status === 'Success') {
-            return response.data.image; // Retorna a string base64 da imagem
+            return response.data.image; // Return the base64 image string
         } else {
             throw new Error('Failed to generate image');
         }
@@ -71,7 +71,7 @@ function createJsonAndConvertToHex(prompt, ipfsUri) {
         prompt: prompt,
         uri: ipfsUri,
         timestamp: new Date().toISOString(),
-        creator: "creator_identifier", // Substituir por um identificador real depois, quando estiver integrado com Particle
+        creator: "creator_identifier", // Replace with a real identifier later, when integrated with Particle
         parameters: {
             negative_prompt: "((close up)),(octane render, render, drawing, bad photo, bad photography:1.3), (worst quality, low quality, blurry:1.2), (bad teeth, deformed teeth, deformed lips), (bad anatomy, bad proportions:1.1), (deformed iris, deformed pupils), (deformed eyes, bad eyes), (deformed face, ugly face, bad face), (deformed hands, bad hands, fused fingers), morbid, mutilated, mutation, disfigured",
             samples: 1,
@@ -129,4 +129,3 @@ export default async function handler(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-

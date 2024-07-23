@@ -12,8 +12,8 @@ const ArtGenerator: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [latestDesign, setLatestDesign] = useState<Design | null>(null);
   const ParticleProvider = useParticleProvider();
-  const [imageData, setImageData] = useState(null);
-  const [ipfsUri, setIpfsUri] = useState(null);
+  const [imageData, setImageData] = useState<Design["image"] | null>(null);
+  const [ipfsUri, setIpfsUri] = useState<string | null>(null);
   const [json, setJson] = useState<string | null>(null);
   const [hex, setHex] = useState<string | null>(null);
 
@@ -24,7 +24,7 @@ const ArtGenerator: React.FC = () => {
     try {
       const response = await axios.post("/api/generateImage", { prompt });
       const { image, uri, json, hex, design } = response.data;
-      setImageData(image);
+      setImageData(design.image);
       setIpfsUri(uri);
       setJson(json);
       setHex(hex);
@@ -110,7 +110,7 @@ const ArtGenerator: React.FC = () => {
           ) : imageData ? (
             <div className="flex flex-col items-center w-full blue-glassmorphism shadow-lg image-full">
               <div className="card-body p-6 w-80">
-                <img src={`data:image/jpeg;base64,${imageData}`} alt="Generated" />
+                <img src={`data:image/jpeg;base64,${Buffer.from(imageData.data).toString("base64")}`} alt="Generated" />
               </div>
             </div>
           ) : (

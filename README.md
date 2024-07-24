@@ -65,15 +65,10 @@ Our platform leverages a cutting-edge stack of technologies and services designe
 
 ## 📒 Contracts
 
-### NFT Factory Contract
+### Design NFT
 
-- **Address:** [0x869181609CD5A911aE43d695A03A38bba5F74A01](https://sepolia.scrollscan.com/address/0x869181609CD5A911aE43d695A03A38bba5F74A01)
-- **Purpose:** NFT Factory contract used to deploy an ERC721 Contract for each user and manage these contracts. Here we can take a look in all NFT contracts deployed and all purchases made in each of them.
-
-### CustomTShirtNFT 
-
-- **Address** (example deployed to an user): [0xb3f28ad65855aa0cd7949adb477e13085348f625](https://sepolia.scrollscan.com/address/0xb3f28ad65855aa0cd7949adb477e13085348f625)
-- **Purpose:** Each user will have him own CustomTShirtNFT contract. When you create a new T-shirt design and save it, a new NFT will be minted to your address. The NFT Factory is used to call functions in these contracts.
+- **Address** (example deployed to an user): [0x4C17C1E23e37868cFf4cA260Ed6d39E347636207](https://sepolia.scrollscan.com/address/0x4C17C1E23e37868cFf4cA260Ed6d39E347636207)
+- **Purpose:** Contract used to mint Design NFT to creator. In our application we are emitting a voucher for it and we will allow execute it soon.
 
 ### USDT Contract
 

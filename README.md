@@ -49,12 +49,12 @@ Harnessing the power of Stable Diffusion, our platform generates unique digital 
 Our platform leverages a cutting-edge stack of technologies and services designed to enhance user experience, ensure security, and foster innovation. Here's a look at the key services in our stack and how we use them:
 
 - **🖱 Particle Connect**: Simplifies the user experience by offering social login capabilities. This service allows users to benefit from blockchain technology without needing in-depth knowledge of how wallets or blockchain work.
-   - [🔎 Explore the Code](./packages/nextjs/components/ThePrismAppWithProviders.tsx)
+   - [🔎 Explore the Code](./nextjs/components/ThePrismAppWithProviders.tsx)
 
 - **👩‍💻 Scaffold Eth 2**: A comprehensive toolkit for Ethereum developers, Scaffold-ETH 2 helps us rapidly deploy Solidity smart contracts and launch a DApp with a React frontend. It includes Hardhat for smart contract development and Next.js for building user-friendly interfaces, streamlining our development process.
 
 - **🌄 Stable Diffusion**: Utilizes C++, Docker, and RISC-V architecture within the Cartesi Machine to power our image generation model. This combination ensures high performance and verifiability of unique art creations from user prompts.
-   - [🔎 Explore the Code](./packages/backend/design_diffusion/src/design/design.service.ts)
+   - [🔎 Explore the Code](./the_prism_diffusion)
 
 - **🔗 Cartesi dApp**: The core of our decentralized application is built on Cartesi technology, using Python for smart contract interactions and the Python Wallet for managing transactions. This setup provides a robust and secure environment for all blockchain operations. Additionally, Python offers a wide range of libraries that are extremely useful for our application.
    - [🔎 Explore the Code](./the_prism_dapp/dapp.py)
@@ -77,7 +77,7 @@ Our platform leverages a cutting-edge stack of technologies and services designe
 
 ### USDT Contract
 
-- **Address:** [0x9c4BD6453BdbA9E58F4A881A2C6BB0683EdcA0B9](https://sepolia.scrollscan.com/address/0x9c4BD6453BdbA9E58F4A881A2C6BB0683EdcA0B9)
+- **Address:** [0xD1A65309dF5AA03b7De9A95D1b6C8496Aff94Aa1](https://sepolia.scrollscan.com/address/0xD1A65309dF5AA03b7De9A95D1b6C8496Aff94Aa1)
 - **Purpose:** Simulate an stablecoin to make payments when an user buy a T-Shirt.
 
 ## 📚 Resources

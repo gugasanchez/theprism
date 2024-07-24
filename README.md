@@ -56,11 +56,11 @@ Our platform leverages a cutting-edge stack of technologies and services designe
 - **🌄 Stable Diffusion**: Utilizes C++, Docker, and RISC-V architecture within the Cartesi Machine to power our image generation model. This combination ensures high performance and verifiability of unique art creations from user prompts.
    - [🔎 Explore the Code](./packages/backend/design_diffusion/src/design/design.service.ts)
 
-- **🔗 Cartesi dApp**: The core of our decentralized application is built on Cartesi technology, using Python for smart contract interactions and the Python Wallet for managing transactions. This setup provides a robust and secure environment for all blockchain operations.
-   - [🔎 Explore the Code](./packages/hardhat/contracts/DesignFunctions.sol)
+- **🔗 Cartesi dApp**: The core of our decentralized application is built on Cartesi technology, using Python for smart contract interactions and the Python Wallet for managing transactions. This setup provides a robust and secure environment for all blockchain operations. Additionally, Python offers a wide range of libraries that are extremely useful for our application.
+   - [🔎 Explore the Code](./the_prism_dapp/dapp.py)
 
 - **💻 Cartesi Frontend Integration**: Seamlessly integrates the Cartesi technology with our frontend, ensuring a smooth user experience. This integration handles everything from user interactions to backend processes, leveraging the full power of Cartesi’s capabilities.
-   - [🔎 Explore the Code](./packages/nextjs/components/ThePrismAppWithProviders.tsx)
+   - [🔎 Explore the Code](./nextjs)
  
 
 ## 📒 Contracts

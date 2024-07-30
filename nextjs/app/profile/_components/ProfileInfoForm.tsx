@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ethers } from "ethers";
+import React, { useEffect, useState } from "react";
 import SepoliaJSON from "../../../utils/sepolia.json";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
+import { ethers } from "ethers";
 
 const ProfileInfoForm = () => {
   const ParticleProvider = useParticleProvider();
@@ -33,7 +33,7 @@ const ProfileInfoForm = () => {
     const msgSenderAddress = await signer.getAddress();
 
     const createUserPayload = {
-      "method": "create_user",
+      method: "create_user", // Corrected the key formatting
       name: name,
       userAddress: msgSenderAddress,
       email: email,

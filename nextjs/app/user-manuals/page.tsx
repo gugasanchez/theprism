@@ -66,15 +66,17 @@ const faqData = [
   },
 ];
 
-const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState(null);
+const FAQ: React.FC = () => {
+  // State to manage which FAQ item is currently open
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const toggleFAQ = (index: number | React.SetStateAction<null>) => {
-    if (openIndex === index) {
-      setOpenIndex(null);
-    } else {
-      setOpenIndex(index);
-    }
+  /**
+   * Toggle the visibility of the FAQ answer.
+   * If the same index is clicked, close it; otherwise, open the new one.
+   * @param index - Index of the FAQ item to toggle
+   */
+  const toggleFAQ = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
@@ -90,6 +92,7 @@ const FAQ = () => {
               <span>{faq.question}</span>
               <ChevronDownIcon className="h-5 w-5 text-gray-500" />
             </div>
+            {/* Show the answer if the current index matches the openIndex */}
             {openIndex === index && <div className="p-4 white-glassmorphism">{faq.answer}</div>}
           </div>
         ))}
@@ -133,9 +136,9 @@ const FAQ = () => {
               <strong>Receive Product:</strong> Your t-shirt will be produced and delivered to your address.
             </li>
             <li className="mb-2">
-              <strong>IMPORTANT:</strong> In the current version of The Prism, our management of t-shirts delivery is
+              <strong>IMPORTANT:</strong> In the current version of The Prism, our management of t-shirt delivery is
               restricted to certain locations. We will keep in touch with you as soon as you order the t-shirts and
-              refund you if not elegible to receive your product.
+              refund you if not eligible to receive your product.
             </li>
           </ol>
         </div>
@@ -144,7 +147,7 @@ const FAQ = () => {
   );
 };
 
-const Profile = () => {
+const Profile: React.FC = () => {
   return (
     <div className="flex justify-center items-center">
       <FAQ />

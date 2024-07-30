@@ -1,37 +1,36 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import NFTCard from "../../../components/NFTCard";
-import SepoliaJSON from "../../../utils/sepolia.json";
+import { useVouchersQuery } from "../../../src/generated/graphql";
 import designApi, { Design } from "../../../utils/designApi";
+import SepoliaJSON from "../../../utils/sepolia.json";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
-import { BigNumber, ethers } from "ethers";
-import { useVouchersQuery } from "../../../src/generated/graphql";
+import { ethers } from "ethers";
 
 type Voucher = {
-  id: string;
+  id?: string; // Optional if not always present
   index: number;
   destination: string;
   input: any; // {index: number; epoch: {index: number; }}
   payload: string;
-  proof: any;
-  executed: any;
+  proof?: any; // Optional if not always present
+  executed?: any; // Optional if not always present
 };
 
-const Designs = () => {
+const Designs: React.FC = () => {
   const [designs, setDesigns] = useState<Design[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [balance, setBalance] = useState(0); // Assuming 100 as an example balance
   const ParticleProvider = useParticleProvider();
 
-  const [result, reexecuteQuery] = useVouchersQuery();
-  const { data, fetching, error } = result;
-  const [voucherToExecute, setVoucherToExecute] = React.useState<any>();
+  const [result] = useVouchersQuery();
+  const { data, fetching } = result;
+  const [voucherToExecute, setVoucherToExecute] = useState<Voucher | null>(null);
 
   useEffect(() => {
     const fetchDesigns = async () => {
-      setIsLoading(true); // Start loading
+      setIsLoading(true);
       try {
         const allDesigns = await designApi.getDesigns();
         const shuffled = allDesigns.sort(() => 0.5 - Math.random());
@@ -39,32 +38,25 @@ const Designs = () => {
       } catch (error) {
         console.error("Failed to fetch designs:", error);
       }
-      setIsLoading(false); // End loading
+      setIsLoading(false);
     };
 
     fetchDesigns();
   }, []);
 
-  useEffect(() => {
-    if (!fetching && data && data.vouchers) {
-      getUserVoucher();
-    }
-  }, [fetching, data]);
-
-  const getUserVoucher = async () => {
+  // Using useCallback to memoize getUserVoucher function
+  const getUserVoucher = useCallback(async () => {
     const USDTAddress = "0xD1A65309dF5AA03b7De9A95D1b6C8496Aff94Aa1";
-    const customProvider = new ethers.providers.Web3Provider(
-      ParticleProvider as ExternalProvider | JsonRpcFetchFunc
-    );
+    const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
     const signer = customProvider.getSigner();
-    const userAddress = (await signer.getAddress()).toLowerCase().slice(2); // Remove '0x' and convert to lowercase
+    const userAddress = (await signer.getAddress()).toLowerCase().slice(2);
 
     try {
       if (data && data.vouchers.edges.length > 0) {
         const voucher = data.vouchers.edges.find(
           ({ node }: any) =>
             node.destination.toLowerCase() === USDTAddress.toLowerCase() &&
-            node.payload.toLowerCase().includes(userAddress)
+            node.payload.toLowerCase().includes(userAddress),
         );
 
         if (voucher) {
@@ -76,18 +68,27 @@ const Designs = () => {
     } catch (error) {
       console.error("Error fetching voucher:", error);
     }
-  };
+  }, [ParticleProvider, data]);
 
-  const withdrawRoyalties = async (voucher: Voucher) => {
+  useEffect(() => {
+    if (!fetching && data && data.vouchers) {
+      getUserVoucher();
+    }
+  }, [fetching, data, getUserVoucher]);
+
+  const withdrawRoyalties = async (voucher: Voucher | null) => {
+    if (!voucher) {
+      console.error("No voucher to execute.");
+      return;
+    }
+
     console.log("Trying to execute voucher...");
 
     const CartesiDAPPAddress = SepoliaJSON.contracts.ApplicationFactory.address;
     const CartesiDAPPABI = SepoliaJSON.contracts.ApplicationFactory.abi;
 
     try {
-      const customProvider = new ethers.providers.Web3Provider(
-        ParticleProvider as ExternalProvider | JsonRpcFetchFunc
-      );
+      const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
       const signer = customProvider.getSigner();
       const CartesiDAPPContract = new ethers.Contract(CartesiDAPPAddress, CartesiDAPPABI, signer);
 
@@ -95,7 +96,6 @@ const Designs = () => {
       await transaction.wait();
 
       console.log("Voucher executed successfully.");
-      setBalance(0);
     } catch (error) {
       console.error("Error executing voucher:", error);
     }
@@ -113,9 +113,7 @@ const Designs = () => {
     const appContractAddress = "0x92Df6c726f8963D564c316b5b91f0A07ED443Ba7";
     const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
 
-    const customProvider = new ethers.providers.Web3Provider(
-      ParticleProvider as ExternalProvider | JsonRpcFetchFunc
-    );
+    const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
     const signer = customProvider.getSigner();
 
     const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
@@ -125,8 +123,6 @@ const Designs = () => {
     const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
 
     await transaction.wait();
-
-    setBalance(0);
   };
 
   const LoadingPlaceholder = () => (
@@ -165,7 +161,10 @@ const Designs = () => {
             </div>
             <div className="mt-8 w-full flex flex-col items-center justify-center">
               <h2 className="text-2xl font-semibold text-white mb-4 shadow-md">Withdraw your royalties.</h2>
-              <p className="text-sm text-gray-400 mb-4">After requesting the withdrawal, you must wait 7 days for it to be approved and you can press the Withdraw Royalties button.</p>
+              <p className="text-sm text-gray-400 mb-4">
+                After requesting the withdrawal, you must wait 7 days for it to be approved and you can press the
+                Withdraw Royalties button.
+              </p>
               <div className="flex space-x-4">
                 <button
                   onClick={askForWithdraw}

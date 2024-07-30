@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import designApi, { Design } from "../../utils/designApi";
+import Image from "next/image";
+import { Design } from "../../utils/designApi";
 import SepoliaJSON from "../../utils/sepolia.json";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
@@ -10,11 +11,9 @@ const ArtGenerator: React.FC = () => {
   const [prompt, setPrompt] = useState("");
   const [showResult, setShowResult] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [latestDesign, setLatestDesign] = useState<Design | null>(null);
   const ParticleProvider = useParticleProvider();
   const [imageData, setImageData] = useState<Design["image"] | null>(null);
   const [ipfsUri, setIpfsUri] = useState<string | null>(null);
-  const [json, setJson] = useState<string | null>(null);
   const [hex, setHex] = useState<string | null>(null);
 
   const handleGenerateImage = async () => {
@@ -23,12 +22,10 @@ const ArtGenerator: React.FC = () => {
     console.log("Generating image with prompt: ", prompt);
     try {
       const response = await axios.post("/api/generateImage", { prompt });
-      const { image, uri, json, hex, design } = response.data;
+      const { uri, json, hex, design } = response.data;
       setImageData(design.image);
       setIpfsUri(uri);
-      setJson(json);
       setHex(hex);
-      setLatestDesign(design);
       console.log("IPFS URI: " + uri);
       console.log("JSON: " + json);
       console.log("HEX: " + hex);
@@ -109,8 +106,15 @@ const ArtGenerator: React.FC = () => {
             <LoadingPlaceholder />
           ) : imageData ? (
             <div className="flex flex-col items-center w-full blue-glassmorphism shadow-lg image-full">
-              <div className="card-body p-6 w-80">
-                <img src={`data:image/jpeg;base64,${Buffer.from(imageData.data).toString("base64")}`} alt="Generated" />
+              <div className="card-body m-6 w-full max-w-[300px] h-[300px] relative">
+                {" "}
+                {/* Adjusted container size */}
+                <Image
+                  src={`data:image/jpeg;base64,${Buffer.from(imageData.data).toString("base64")}`}
+                  alt="Generated"
+                  layout="fill"
+                  objectFit="contain"
+                />
               </div>
             </div>
           ) : (

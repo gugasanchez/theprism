@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import SepoliaJSON from "../utils/sepolia.json";
 import USDTJson from "../utils/USDT.json";
+import SepoliaJSON from "../utils/sepolia.json";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
 import { ethers } from "ethers";
@@ -89,24 +89,24 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings, index }) =>
     const createOrderPayload = {
       method: "create_order",
       design_id: designId,
-      manufacturerAddress: "0xd76A0AaC5B0f1148158c847a47356F43e8cCaE2C"
+      manufacturerAddress: "0xd76A0AaC5B0f1148158c847a47356F43e8cCaE2C",
     };
-  
+
     console.log("JSON:", createOrderPayload);
 
     const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createOrderPayload)));
     const appContractAddress = "0x92Df6c726f8963D564c316b5b91f0A07ED443Ba7";
-  
+
     const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
     const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
-  
+
     const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
     const signer = customProvider.getSigner();
-  
+
     const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
-  
+
     const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
-  
+
     await transaction.wait();
 
     const estimated = "40 USDT";
@@ -139,7 +139,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings, index }) =>
   const handleConfirmOrder = async () => {
     try {
       if (ParticleProvider) {
-        const appContractAddress = "0x92Df6c726f8963D564c316b5b91f0A07ED443Ba7"
+        const appContractAddress = "0x92Df6c726f8963D564c316b5b91f0A07ED443Ba7";
         const ERC20PortalAddress = "0x9C21AEb2093C32DDbC53eEF24B873BDCd1aDa1DB";
         const USDTAddress = "0xD1A65309dF5AA03b7De9A95D1b6C8496Aff94Aa1";
         const price = 40;
@@ -155,8 +155,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings, index }) =>
 
         const amount = ethers.BigNumber.from(price).mul(ethers.BigNumber.from(10).pow(18));
 
-
-        const tx_2 = await ERC20PortalContract.depositERC20Tokens(USDTAddress, appContractAddress, amount , "0x");
+        const tx_2 = await ERC20PortalContract.depositERC20Tokens(USDTAddress, appContractAddress, amount, "0x");
         await tx_2.wait();
         router.push("/orders");
       }
@@ -218,7 +217,8 @@ const NFTCard: React.FC<NFTCardProps> = ({ nftItem, title, listings, index }) =>
               X
             </button>
             <div className={style.addressHeader}>
-              NOTE: Your t-shirt will be sent to your registered address. If you wish to change, change your address in the "Profile" tab.
+              NOTE: Your t-shirt will be sent to your registered address. If you wish to change, change your address in
+              the &quot;Profile&quot; tab.
             </div>
             {!showApproveTransaction && !showConfirmOrder && (
               <button className={style.confirmOrderButton} onClick={() => handleEstimatePrice(index)}>

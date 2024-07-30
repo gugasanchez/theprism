@@ -53,18 +53,18 @@ const Designs = () => {
 
   const getUserVoucher = async () => {
     const USDTAddress = "0xD1A65309dF5AA03b7De9A95D1b6C8496Aff94Aa1";
-    // const customProvider = new ethers.providers.Web3Provider(
-    //   ParticleProvider as ExternalProvider | JsonRpcFetchFunc
-    // );
-    // const signer = customProvider.getSigner();
-    // const userAddress = signer.getAddress();
+    const customProvider = new ethers.providers.Web3Provider(
+      ParticleProvider as ExternalProvider | JsonRpcFetchFunc
+    );
+    const signer = customProvider.getSigner();
+    const userAddress = (await signer.getAddress()).toLowerCase().slice(2); // Remove '0x' and convert to lowercase
 
     try {
       if (data && data.vouchers.edges.length > 0) {
         const voucher = data.vouchers.edges.find(
           ({ node }: any) =>
-            node.destination.toLowerCase() === USDTAddress /*&&*/
-            // node.payload.toLowerCase() === "0x123456"
+            node.destination.toLowerCase() === USDTAddress.toLowerCase() &&
+            node.payload.toLowerCase().includes(userAddress)
         );
 
         if (voucher) {
@@ -95,7 +95,7 @@ const Designs = () => {
       await transaction.wait();
 
       console.log("Voucher executed successfully.");
-      setBalance(0); // Update the balance accordingly
+      setBalance(0);
     } catch (error) {
       console.error("Error executing voucher:", error);
     }
@@ -110,8 +110,8 @@ const Designs = () => {
 
     const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createWithdrawPayload)));
 
-    const appContractAddress = "";
-    const InputBoxAddress = SepoliaJSON.contracts.InputBox.address;
+    const appContractAddress = "0x92Df6c726f8963D564c316b5b91f0A07ED443Ba7";
+    const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
 
     const customProvider = new ethers.providers.Web3Provider(
       ParticleProvider as ExternalProvider | JsonRpcFetchFunc
@@ -148,9 +148,10 @@ const Designs = () => {
         ) : (
           <div className="justify-between items-center flex flex-grow flex-col p-8 gap-4 blue-glassmorphism rounded-3xl shadow-md shadow-secondary border border-base-300 w-full">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-center items-start">
-              {designs.map((design) => (
+              {designs.map((design, index) => (
                 <NFTCard
                   key={design._id}
+                  index={index}
                   nftItem={{
                     id: design._id,
                     image: `data:image/jpeg;base64,${Buffer.from(design.image.data).toString("base64")}`,
@@ -163,7 +164,8 @@ const Designs = () => {
               ))}
             </div>
             <div className="mt-8 w-full flex flex-col items-center justify-center">
-              <h2 className="text-2xl font-semibold text-white mb-4 shadow-md">Royalty Balance: {balance} USDT</h2>
+              <h2 className="text-2xl font-semibold text-white mb-4 shadow-md">Withdraw your royalties.</h2>
+              <p className="text-sm text-gray-400 mb-4">After requesting the withdrawal, you must wait 7 days for it to be approved and you can press the Withdraw Royalties button.</p>
               <div className="flex space-x-4">
                 <button
                   onClick={askForWithdraw}

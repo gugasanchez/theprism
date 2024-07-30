@@ -32,7 +32,6 @@ DAPP_RELAY_ADDRESS = "0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE"
 DESIGN_NFT_ADDRESS = "0x4C17C1E23e37868cFf4cA260Ed6d39E347636207"
 USDT_ADDRESS = "0xD1A65309dF5AA03b7De9A95D1b6C8496Aff94Aa1"
 
-
 def keccak_256_hex_pycryptodome(data):
     k = keccak.new(digest_bits=256)
     k.update(data)
@@ -102,12 +101,6 @@ def create_user(name, userAddress, email):
     users[user_id] = new_user
     return new_user
 
-def get_user_id_by_address(userAddress):
-    for user in users.values():
-        if user['address'] == userAddress:
-            return user['id']
-    return None 
-
 def create_design(prompt, userAddress, tokenURI):
     global design_id
     design_id += 1
@@ -122,12 +115,12 @@ def create_design(prompt, userAddress, tokenURI):
     return design
 
 
-def create_order(user_id, design_id, manufacturerAddress):
+def create_order(user_address, design_id, manufacturerAddress):
     global order_id
     order_id += 1
     order = {
         "id": order_id,
-        "user_id": user_id,
+        "user_address": user_address,
         "design_id": design_id,
         "manufacturerAddress": manufacturerAddress,
         "status": "pending"
@@ -137,16 +130,16 @@ def create_order(user_id, design_id, manufacturerAddress):
 
 def get_last_order_details_by_wallet_address(wallet_address):
     try:
-        user_id = None
-        for user in users.values():
-            if user['address'].lower() == wallet_address.lower():
-                user_id = user['id']
-                break
+        # user_id = None
+        # for user in users.values():
+        #     if user['address'].lower() == wallet_address.lower():
+        #         user_id = user['id']
+        #         break
         
-        if user_id is None:
-            raise ValueError("User not found for the given wallet address")
+        # if user_id is None:
+        #     raise ValueError("User not found for the given wallet address")
         
-        user_orders = [order for order in orders.values() if order['user_id'] == user_id]
+        user_orders = [order for order in orders.values() if order['user_address'] == wallet_address]
 
         if not user_orders:
             raise ValueError("No orders found for the given user_id")
@@ -326,8 +319,7 @@ def handle_advance(data):
             send_report({"payload": str2hex(f'{report_payload}')})
         
         elif json_data["method"] == "create_order":
-            msgsender_id = get_user_id_by_address(msg_sender)
-            order = create_order(msgsender_id, json_data["design_id"], json_data["manufacturerAddress"])
+            order = create_order(msg_sender, json_data["design_id"], json_data["manufacturerAddress"])
             report_payload = {"order_id": order["id"]}
             send_report({"payload": str2hex(f'{report_payload}')})
         

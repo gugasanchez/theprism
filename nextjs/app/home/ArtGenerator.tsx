@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Image from "next/image";
-import NFTFactoryJSON from "../../utils/NFTFactory.json";
 import designApi, { Design } from "../../utils/designApi";
+import SepoliaJSON from "../../utils/sepolia.json";
 import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
+import axios from "axios";
 import { ethers } from "ethers";
 
 const ArtGenerator: React.FC = () => {
@@ -12,46 +12,69 @@ const ArtGenerator: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [latestDesign, setLatestDesign] = useState<Design | null>(null);
   const ParticleProvider = useParticleProvider();
+  const [imageData, setImageData] = useState<Design["image"] | null>(null);
+  const [ipfsUri, setIpfsUri] = useState<string | null>(null);
+  const [json, setJson] = useState<string | null>(null);
+  const [hex, setHex] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-    setLoading(true); // Start loading
-    setShowResult(true); // Immediately show result area
+  const handleGenerateImage = async () => {
+    setShowResult(true);
+    setLoading(true);
+    console.log("Generating image with prompt: ", prompt);
     try {
-      // Create a new design with the provided prompt
-      await designApi.createDesign(prompt);
-      // After creating, fetch the latest design to update the UI
-      const designs = await designApi.getDesigns();
-      const newLatestDesign = designs[designs.length - 1];
-      setLatestDesign(newLatestDesign);
+      const response = await axios.post("/api/generateImage", { prompt });
+      const { image, uri, json, hex, design } = response.data;
+      setImageData(design.image);
+      setIpfsUri(uri);
+      setJson(json);
+      setHex(hex);
+      setLatestDesign(design);
+      console.log("IPFS URI: " + uri);
+      console.log("JSON: " + json);
+      console.log("HEX: " + hex);
+      console.log("Design: ", design);
     } catch (error) {
-      console.error("Failed to create or fetch designs", error);
+      console.error("Error generating image:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false); // End loading
-  };
-
-  // Helper function to convert image data to base64 string
-  const imageToBase64 = (imageData: number[]) => {
-    return btoa(String.fromCharCode(...new Uint8Array(imageData)));
   };
 
   const handleGenerateNFT = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const imageUrl =
-      "https://img.freepik.com/fotos-premium/uma-camisa-branca-com-fundo-preto-e-as-costas_653449-538.jpg";
-    const NFTFactoryAddress = "0x869181609CD5A911aE43d695A03A38bba5F74A01";
+    if (!hex) {
+      console.error("Hex data is not set");
+      return;
+    }
+
     const customProvider = new ethers.providers.Web3Provider(ParticleProvider as ExternalProvider | JsonRpcFetchFunc);
     const signer = customProvider.getSigner();
+    const msgSenderAddress = await signer.getAddress();
 
-    const NFTFactoryABI = NFTFactoryJSON.abi;
+    const createDesignPayload = {
+      method: "create_design",
+      prompt: prompt,
+      userAddress: msgSenderAddress,
+      uri: ipfsUri,
+    };
 
-    const NFTFactoryContract = new ethers.Contract(NFTFactoryAddress, NFTFactoryABI, signer);
+    console.log("JSON:", createDesignPayload);
 
-    const transaction = await NFTFactoryContract.mintTo(imageUrl);
+    const payloadBytes = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(createDesignPayload)));
+
+    console.log("createOrderPayload:", payloadBytes);
+
+    const appContractAddress = "0x92Df6c726f8963D564c316b5b91f0A07ED443Ba7";
+
+    const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
+    const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
+
+    const InputBoxContract = new ethers.Contract(InputBoxAddress, InputBoxABI, signer);
+
+    const transaction = await InputBoxContract.addInput(appContractAddress, payloadBytes);
 
     await transaction.wait();
-
-    console.log("Generate NFT");
   };
 
   const LoadingPlaceholder = () => (
@@ -74,8 +97,8 @@ const ArtGenerator: React.FC = () => {
                 value={prompt}
               />
             </div>
-            <button type="button" onClick={handleSubmit} className="btn btn-secondary btn-sm">
-              Create Art ✨
+            <button type="button" onClick={handleGenerateImage} className="btn btn-secondary btn-sm">
+              {loading ? "Generating..." : "Create Art ✨"}
             </button>
           </div>
         </div>
@@ -84,18 +107,10 @@ const ArtGenerator: React.FC = () => {
         <div className="w-full mt-4 flex flex-col items-center gap-4">
           {loading ? (
             <LoadingPlaceholder />
-          ) : latestDesign ? (
+          ) : imageData ? (
             <div className="flex flex-col items-center w-full blue-glassmorphism shadow-lg image-full">
-              <div className="card-body p-6">
-                <figure>
-                  <Image
-                    src={`data:image/jpeg;base64,${imageToBase64(latestDesign.image.data)}`}
-                    alt="Generated Art"
-                    width={200}
-                    height={200}
-                    objectFit="cover"
-                  />
-                </figure>
+              <div className="card-body p-6 w-80">
+                <img src={`data:image/jpeg;base64,${Buffer.from(imageData.data).toString("base64")}`} alt="Generated" />
               </div>
             </div>
           ) : (

@@ -43,9 +43,10 @@ const NFTGrid = () => {
         <LoadingPlaceholder />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-center items-start">
-          {designs.map(design => (
+          {designs.map((design, index) => (
             <NFTCard
               key={design._id}
+              index={index + 1} // Pass the index starting from 1
               nftItem={{
                 id: design._id,
                 image: `data:image/jpeg;base64,${imageToBase64(design.image.data)}`,

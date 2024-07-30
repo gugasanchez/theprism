@@ -1,6 +1,0 @@
---find-links https://prototyp3-dev.github.io/pip-wheels-riscv/wheels
-requests == 2.31.0
-eth_abi == 4.0.0
-pillow 
-diffusers
-transformers

@@ -54,7 +54,7 @@ Our platform leverages a cutting-edge stack of technologies and services designe
 - **👩‍💻 Scaffold Eth 2**: A comprehensive toolkit for Ethereum developers, Scaffold-ETH 2 helps us rapidly deploy Solidity smart contracts and launch a DApp with a React frontend. It includes Hardhat for smart contract development and Next.js for building user-friendly interfaces, streamlining our development process.
 
 - **🌄 Stable Diffusion**: Utilizes C++, Docker, and RISC-V architecture within the Cartesi Machine to power our image generation model. This combination ensures high performance and verifiability of unique art creations from user prompts.
-   - [🔎 Explore the Code](./the_prism_diffusion)
+   - [🔎 Explore the Code](https://github.com/ryanviana/cartesi-stable-diffusion)
 
 - **🔗 Cartesi dApp**: The core of our decentralized application is built on Cartesi technology, using Python for smart contract interactions and the Python Wallet for managing transactions. This setup provides a robust and secure environment for all blockchain operations. Additionally, Python offers a wide range of libraries that are extremely useful for our application.
    - [🔎 Explore the Code](./the_prism_dapp/dapp.py)

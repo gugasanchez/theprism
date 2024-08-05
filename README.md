@@ -1,6 +1,6 @@
 ![The Prism Banner](https://github.com/gugasanchez/theprism/assets/62973287/ac16ce4e-cced-4a22-8570-f42ae4346cba)
 
-# [The Prism](https://the-prism-eth-samba.vercel.app/) ▲
+# [The Prism](https://theprism-cartesi.vercel.app/) ▲
 
 Unleash your creativity with The Prism, a cutting-edge platform where art meets blockchain to make your designs wearable. Dive into a world where AI-generated images become tangible and every creation is a unique fashion statement.
 

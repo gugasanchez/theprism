@@ -92,7 +92,7 @@ Aqui está a seção de "Setup and Installation Guides" para seu README.md:
 ### Frontend Setup
 
 1. **Accessing the Application:**
-   - Visit [The Prism Frontend](https://the-prism-eth-samba.vercel.app/) to use the application. The frontend is deployed and available at this domain.
+   - Visit [The Prism Frontend](https://theprism-cartesi.vercel.app/) to use the application. The frontend is deployed and available at this domain.
 
 2. **Running the Frontend Locally:**
    - Clone the repository:

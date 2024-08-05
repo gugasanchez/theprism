@@ -83,9 +83,9 @@ Our platform leverages a cutting-edge stack of technologies and services designe
 
 - **[Our Demo](https://www.youtube.com/watch?v=mfs1G4GwYDE)**: Experience The Prism Platform in action. Our demo provides a hands-on look at how users can create, mint, and translate digital art into physical products seamlessly.
 
-- **[Our Backend](https://the-prism-backend.vercel.app/designs)**: The Prism Backend stores and manages base64 encoded images, designed for easy frontend integration.
+- **[Our Whitepaper](https://github.com/user-attachments/files/16502782/The_Prism_Whitepaper.pdf)**: The Prism Whitepaper contains detailed information about our project and vision.
 
-Aqui está a seção de "Setup and Installation Guides" para seu README.md:
+- **[Our User Manuals](https://github.com/user-attachments/files/16502795/User.Manuals.pdf)**: Check out this amazing simple guide for you to learn to use The Prism.
 
 ## Setup and Installation Guides
 

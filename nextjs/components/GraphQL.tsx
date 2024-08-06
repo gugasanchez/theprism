@@ -12,7 +12,7 @@ import { Client, Provider, createClient } from "urql";
 
 const useGraphQL = () => {
   return useMemo<Client>(() => {
-    const url = "http://localhost:8080/graphql";
+    const url = "https://theprism.fly.dev/graphql";
     return createClient({ url });
   }, []);
 };

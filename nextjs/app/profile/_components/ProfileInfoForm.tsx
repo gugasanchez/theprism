@@ -6,13 +6,19 @@ import { ExternalProvider, JsonRpcFetchFunc } from "@ethersproject/providers";
 import { useParticleProvider } from "@particle-network/connect-react-ui";
 import { ethers } from "ethers";
 
+interface User {
+  id: number;
+  address: string;
+  name: string;
+  email: string;
+}
+
 const ProfileInfoForm = () => {
   const ParticleProvider = useParticleProvider();
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState("John Doe");
   const [email, setEmail] = useState("john.doe@example.com");
   const [walletAddress, setWalletAddress] = useState("");
-  const [deliveryAddress, setDeliveryAddress] = useState("1234 Main St, Anytown, USA");
 
   useEffect(() => {
     const fetchWalletAddress = async () => {
@@ -20,6 +26,48 @@ const ProfileInfoForm = () => {
       const signer = customProvider.getSigner();
       const msgSenderAddress = await signer.getAddress();
       setWalletAddress(msgSenderAddress);
+
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch('https://theprism.fly.dev/inspect/list_users');
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Esse é o data:", data);
+
+            if (data.reports && data.reports.length > 0) {
+              const payloadHex = data.reports[0].payload;
+              const decodedPayload = ethers.utils.toUtf8String(payloadHex);
+              console.log("Decoded Payload:", decodedPayload);
+
+              const cleanedPayload = decodedPayload.replace(/^[^\{]+/, '').replace(/'/g, '"');
+
+              try {
+                const users: User[] = JSON.parse(cleanedPayload).users;
+
+                const currentUser = users.find((user: User) => user.address === msgSenderAddress);
+
+                if (currentUser) {
+                  setName(currentUser.name);
+                  setEmail(currentUser.email);
+                } else {
+                  console.error("User not found.");
+                }
+              } catch (jsonError) {
+                console.error("Failed to parse JSON:", jsonError);
+                console.error("Cleaned Payload:", cleanedPayload);
+              }
+            } else {
+              console.error("No reports found in the data.");
+            }
+          } else {
+            console.error('Failed to fetch users:', response.status);
+          }
+        } catch (error) {
+          console.error('Error fetching users:', error);
+        }
+      };
+
+      fetchUsers();
     };
 
     fetchWalletAddress();
@@ -33,7 +81,7 @@ const ProfileInfoForm = () => {
     const msgSenderAddress = await signer.getAddress();
 
     const createUserPayload = {
-      method: "create_user", // Corrected the key formatting
+      method: "create_user",
       name: name,
       userAddress: msgSenderAddress,
       email: email,
@@ -46,7 +94,6 @@ const ProfileInfoForm = () => {
     console.log("createOrderPayload:", payloadBytes);
 
     const appContractAddress = "0x92Df6c726f8963D564c316b5b91f0A07ED443Ba7";
-
     const InputBoxAddress = "0x59b22D57D4f067708AB0c00552767405926dc768";
     const InputBoxABI = SepoliaJSON.contracts.InputBox.abi;
 
@@ -104,16 +151,6 @@ const ProfileInfoForm = () => {
                       />
                     </div>
                   </div>
-                  <div>
-                    <label className="text-md font-bold">Delivery Address</label>
-                    <div className="flex border-2 border-base-300 rounded-full text-accent w-full">
-                      <textarea
-                        value={deliveryAddress}
-                        onChange={e => setDeliveryAddress(e.target.value)}
-                        className="input input-ghost focus-within:border-transparent focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 py-1 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-                      />
-                    </div>
-                  </div>
                   <div className="flex justify-start">
                     <button type="submit" className="btn btn-secondary btn-sm">
                       Create User / Update Account 💾
@@ -128,8 +165,6 @@ const ProfileInfoForm = () => {
                   <div className="flex flex-row items-center input input-ghost focus-within:border-transparent focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400 min-h-10">{`${email}`}</div>
                   <label className="text-md font-bold mt-2">Wallet Address</label>
                   <div className="flex flex-row items-center input input-ghost focus-within:border-transparent focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400 min-h-10">{`${walletAddress}`}</div>
-                  <label className="text-md font-bold mt-2">Delivery Address</label>
-                  <div className="flex flex-row items-center input input-ghost focus-within:border-transparent focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400 min-h-10">{`${deliveryAddress}`}</div>
                   {!editMode && <EditButton />}
                 </div>
               )}
